@@ -68,7 +68,7 @@ This section explains where BLOB storage fits in the full architecture of Facebo
 Figure 1 shows how BLOB storage fits into the overall architecture at Facebook. BLOB creates—e.g., a video upload—originate on the web tier (C1). The web tier writes the data to the BLOB storage system (C2) and then stores the handle for that data into our graph store (C3), Tao [9]. The handle can be used to retrieve or delete the BLOB. Tao associates the handle with other elements of the graph, e.g., the owner of a video.
 > 图1显示了BLOB存储如何适应Facebook的整体架构。 BLOB创建 - 例如，视频上传 - 源自Web层（C1）。 Web层将数据写入BLOB存储系统（C2），然后将该数据的句柄存储到我们的图形存储（C3），Tao [9]中。 句柄可用于检索或删除BLOB。 Tao将句柄与图表的其他元素相关联，例如视频的所有者。
 
-![figure1](/figure1.PNG)
+![](resources/figure1.PNG)
 
 BLOB reads—e.g., watching a video—also originate on the web tier (R1). The web tier accesses the Graph Store (R2) to find the necessary handles and constructs a URL that can be used to fetch the BLOB. When the browser later sends a request for the BLOB (R3), the request first goes to a content distribution network (CDN) [2, 34] that caches commonly accessed BLOBs. If the CDN does not have the requested BLOB, it sends a request to the BLOB storage system (R4), caches the BLOB, and returns it to the user. The CDN shields the storage system from a significant number of requests on frequently accessed data, and we return to its importance in Sections 4.1.
 > BLOB读取 - 例如，观看视频 - 也来自Web层（R1）。 Web层访问Graph Store（R2）以查找必要的句柄并构造可用于获取BLOB的URL。 当浏览器稍后发送对BLOB（R3）的请求时，该请求首先进入缓存共同访问的BLOB的内容分发网络（CDN）[2,34]。 如果CDN没有请求的BLOB，它向BLOB存储系统（R4）发送请求，缓存BLOB，并将其返回给用户。 CDN使存储系统免受大量频繁访问数据的请求，我们在4.1节中回到了它的重要性。
