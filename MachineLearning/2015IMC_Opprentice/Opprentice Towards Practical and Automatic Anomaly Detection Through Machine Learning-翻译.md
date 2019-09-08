@@ -50,9 +50,9 @@ In this section, we first introduce the background of KPI anomaly detection. The
 KPIs: The KPI data, which Opprentice aims to work with, are the time series data with the format of (timestamp, value). These data can be collected from SNMP, syslogs, network traces, web access logs, and other data sources. In this paper, we choose three representative KPIs from a global top search engine as a case study. Table 1 describes their basic information, and Fig. 1 shows their 1-week examples. We hide the absolute values for confidentiality. Fig. 1(a) shows the search page view (PV), which is the number of successfully served queries. PV has a significant influence on the revenue of the search engine. Fig. 1(b) shows the number of slow responses of search data centers (#SR), which is an important performance metric of the data centers. Fig. 1(c) is the the 80th percentile of search response time (SRT). This KPI has a measurable impact on the users’ search experience [29].
 > KPI：Opprentice旨在使用的KPI数据是时间序列数据，格式为（时间戳，值）。 可以从SNMP，syslog，网络跟踪，Web访问日志和其他数据源收集这些数据。 在本文中，我们从全球顶级搜索引擎中选择三个代表性KPI作为案例研究。 表1描述了他们的基本信息，图1显示了他们的1周示例。 我们隐藏了机密性的绝对值。 图1（a）显示了搜索页面视图（PV），它是成功提供的查询的数量。 PV对搜索引擎的收入有重大影响。 图1（b）显示了搜索数据中心（#SR）的慢响应数，这是数据中心的重要性能指标。 图1（c）是搜索响应时间（SRT）的第80百分位数。 此KPI对用户的搜索体验有可衡量的影响[29]。
 
-![](resources\table1.PNG)
+![](resources/table1.PNG)
 
-![](resources\figure1.PNG)
+![](resources/figure1.PNG)
 
 Beyond the physical meanings, the characteristics of these KPI data are also different. First, they have different levels of seasonality. For example, by visually inspecting, we see that the PV is much more regular than the other two KPIs and shows a strong seasonality. In addition, the dispersions of the KPIs are different too. Since we have to hide the absolute values, we use the coefficient of variation (Cv) to measure the dispersions. Cv equals the standard deviation divided by the mean. In Table 1, #SR has Cv = 209% and is spread out the most; SRT has Cv = 7% and concentrates the most to the mean.
 > 除了物理意义之外，这些KPI数据的特征也不同。 首先，他们有不同程度的季节性。 例如，通过视觉检查，我们发现PV比其他两个KPI更加规律，并显示出强烈的季节性。 此外，KPI的分散也是不同的。 由于我们必须隐藏绝对值，我们使用变异系数（Cv）来测量色散。 Cv等于标准偏差除以平均值。 在表1中，＃SR具有Cv = 209％并且分散最多; SRT的Cv = 7％，并且最集中于平均值。
@@ -81,7 +81,7 @@ In this paper, we focus on identifying anomalous behaviors in KPI time series. T
 Opprentice approaches the above problem through supervised machine learning. Supervised machine learning can be used to automatically build a classification model from historical data, and then classify future data based on the model. Because of the data-driven property, supervised machine learning has become a popular solution where hand-crafted rules of classification are difficult to specify in advance, e.g., computer vision and data mining. In anomaly detection, manually pre-defining anomalies is also challenging, which motivates us to tackle the problem through supervised machine learning.
 > Opprentice通过有监督的机器学习来解决上述问题。 监督机器学习可用于从历史数据自动构建分类模型，然后基于模型对未来数据进行分类。 由于数据驱动的特性，受监督的机器学习已成为一种流行的解决方案，其中手工制作的分类规则难以预先指定，例如计算机视觉和数据挖掘。 在异常检测中，手动预定义异常也具有挑战性，这促使我们通过有监督的机器学习来解决问题。
 
-![](resources\figure2.PNG)
+![](resources/figure2.PNG)
 
 Fig. 2 shows the high-level idea of how machine learning is applied in Opprentice. We generate a training set from historical KPI data, which is used by a machine learning algorithm to build a classification model. To this end, first, operators need to label the anomalies in the data. In the meanwhile, we use existing basic anomaly detectors to quantify anomalous level of the data from their own perspectives, respectively. The results of the detectors are used as the features of the data. The features and operators’ labels together form the training set. Then a machine learning algorithm takes advantage of a certain technique to build a classification model. For example, given the decision boundaries in Fig. 2, the point represented by the question mark is classified as an anomaly.
 > 图2显示了如何在Opprentice中应用机器学习的高级概念。 我们根据历史KPI数据生成训练集，机器学习算法使用该数据来构建分类模型。 为此，首先，操作员需要标记数据中的异常。 同时，我们使用现有的基本异常检测器分别从他们自己的角度量化数据的异常水平。 检测器的结果用作数据的特征。 功能和操作员的标签一起构成了训练集。 然后，机器学习算法利用某种技术来构建分类模型。 例如，给定图2中的决策边界，由问号表示的点被分类为异常。
@@ -119,14 +119,14 @@ Fig. 3 illustrates the architecture of Opprentice. From the operators’ view, t
 From the Opprentice-side view, first in Fig. 3(a), an anomaly classifier is trained as follows. Numerous detectors function as feature extractors for the data. Based on the features together with the operators’ labels, a machine learning algorithm (e.g., random forests used in this paper) incrementally retrains the anomaly classifier with both the historical and the latest labeled data. After that, in Fig. 3(b), the same set of detectors extract the features of incoming data, and the classifier is used to detect/classify them. Note that, unlike the traditional way, the detectors here only extract features rather than reporting anomalies by themselves. Next, we introduce the design of each component in detail.
 > 从Opprentice侧视图，首先在图3（a）中，如下训练异常分类器。 许多检测器用作数据的特征提取器。 基于这些特征以及操作者的标签，机器学习算法（例如，本文中使用的随机森林）使用历史和最新标记数据递增地重新训练异常分类器。 之后，在图3（b）中，同一组检测器提取输入数据的特征，并且分类器用于检测/分类它们。 请注意，与传统方式不同，这里的检测器只提取特征而不是自己报告异常。 接下来，我们将详细介绍每个组件的设计。
 
-![](resources\figure3.PNG)
+![](resources/figure3.PNG)
 
 4.2 Labeling Tool
 
 We developed a dedicated tool to help operators effectively label anomalies in historical data. The user interface of the tool is shown in the left part of Fig. 4, with a brief user manual on the right side. The tool works as follows. First, it loads KPI data, and displays them with a line graph in the top panel. To assist operators in identifying anomalies, the data of the last day and the last week are also shown in light colors. The operators can use the arrow keys on the keyboard to navigate (forward, backward, zoom in and zoom out) through the data. Once the operators have identified anomalies, they can left click and drag the mouse to label the window of anomalies, or right click and drag to (partially) cancel previously labeled window. Besides, they can adjust the Y axis scale via the slider on the right side. The data navigator in the bottom panel shows a zoom-out view of the data.
 > 我们开发了一个专用工具，帮助操作员有效地标记历史数据中的异常。 该工具的用户界面显示在图4的左侧部分，右侧是简要的用户手册。 该工具的工作原理如下。 首先，它加载KPI数据，并在顶部面板中使用折线图显示它们。 为了帮助操作员识别异常，最后一天和最后一周的数据也以浅色显示。 操作员可以使用键盘上的箭头键来浏览（向前，向后，放大和缩小）数据。 一旦操作员识别出异常，他们可以左键单击并拖动鼠标来标记异常窗口，或者右键单击并拖动以（部分）取消先前标记的窗口。 此外，他们可以通过右侧的滑块调整Y轴刻度。 底部面板中的数据导航器显示数据的缩小视图。
 
-![](resources\figure4.PNG)
+![](resources/figure4.PNG)
 
 The labeling tool is effective because operators do not have to label each time bin one by one. They first see a relatively zoomed out view of the KPI curve. In this view, we do not smooth the curve. Thus, even if one time bin is anomalous, it is visible to operators. Then, operators can zoom in to locate the specific anomalous time bin(s), and label them by a window. Labeling windows, as opposite to individual time bins, significantly reduces labeling overhead. §5.7 shows that it only takes operators a few minutes to label a month of data in our studied KPIs.
 > 标签工具是有效的，因为操作员不必逐个标记每个箱子。 他们首先看到KPI曲线的相对缩小视图。 在这个视图中，我们不会平滑曲线。 因此，即使一个时间段是异常的，操作员也可以看到它。 然后，操作员可以放大以找到特定的异常时间仓，并通过窗口标记它们。 标记窗口，与单个时间仓相反，显着降低了标签开销。 §5.7表明，只需要操作员几分钟就可以在我们研究的KPI中标记一个月的数据。
@@ -194,7 +194,7 @@ Preliminaries: decision trees. A decision tree [41] is a popular learning algori
 There are two major problems of decision tree. One is that the greedy feature selection at each step may not lead to a good final classifier; the other is that the fully grown tree is very sensitive to noisy data and features, and would not be general enough to classify future data, which is called overfitting. Some pruning solutions have been proposed to solve overfitting. For example, stop growing the tree earlier after it exceeds a threshold of depth. However, it is still quite tricky to determine such a threshold.
 > 决策树有两个主要问题。 一个是每个步骤中的贪婪特征选择可能不会导致良好的最终分类器; 另一个是完全成长的树对噪声数据和特征非常敏感，并且不足以对未来数据进行分类，这被称为过度拟合。 已经提出了一些修剪解决方案来解决过度拟合问题。 例如，在树超过深度阈值后停止生长树。 但是，确定这样的阈值仍然非常棘手。
 
-![](resources\figure5.PNG)
+![](resources/figure5.PNG)
 
 A Random forest is an ensemble classifier using many decision trees. Its main principle is that a group of weak learners (e.g., individual decision trees) can together form a strong learner [44]. To grow different trees, a random forest adds some elements or randomness. First, each tree is trained on subsets sampled from the original training set. Second, instead of evaluating all the features at each level, the trees only consider a random subset of the features each time. As a result, some trees may be not or less affected by the irrelevant and redundant features if these features are not used by the trees. All the trees are fully grown in this way without pruning. The random forest then combines those trees by majority vote. That is, given a new data point, each of the trees gives its own classification. For example, if 40 trees out of 100 classify the point into an anomaly, its anomaly probability is 40%. By default, the random forest uses 50% as the classification threshold (i.e., cThld).
 > 随机森林是使用许多决策树的集合分类器。其主要原则是一组弱学习者（例如，个体决策树）可以共同形成一个强大的学习者[44]。为了种植不同的树木，随机森林会增加一些元素或随机性。首先，对从原始训练集中采样的子集训练每棵树。其次，树不是评估每个级别的所有特征，而是每次只考虑特征的随机子集。因此，如果树木不使用这些特征，则一些树可能不受或不受不相关和冗余特征的影响。所有的树都是这样完全种植的，没有修剪。然后随机森林通过多数投票结合这些树。也就是说，给定一个新的数据点，每个树都给出了自己的分类。例如，如果100个中的40棵树将该点分类为异常，则其异常概率为40％。默认情况下，随机森林使用50％作为分类阈值（即cThld）。
@@ -209,7 +209,7 @@ The above properties of randomness and ensemble make random forests more robust 
 We need to configure cThlds rather than using the default one (e.g., 0.5) for two reasons. First, when faced with imbalanced data (anomalous data points are much less frequent than normal ones in data sets), machine learning algorithms typically fail to identify the anomalies (low recall) if using the default cThlds [31]. Second, operators have their own preference regarding the precision and recall of anomaly detection. Configuring cThlds is a general method to trade off between precision and recall [31]. In consequence, we should configure the cThld of random forests properly to satisfy the operators’ preference.
 > 我们需要配置cThld而不是使用默认值（例如，0.5）有两个原因。 首先，当面对不平衡的数据（异常数据点比数据集中的正常数据点频繁得多）时，如果使用默认的cThlds，机器学习算法通常无法识别异常（低召回）[31]。 其次，操作员在异常检测的精度和召回方面有自己的偏好。 配置cThlds是在精确度和召回之间进行权衡的一般方法[31]。 因此，我们应该适当地配置随机森林的cThld以满足操作员的偏好。
 
-![](resources\figure6.PNG)
+![](resources/figure6.PNG)
 
 Before describing how we configure the cThld, we first use Precision-Recall (PR) curves to provide some intuitions. PR curves is widely used to evaluate the accuracy of a binary classifier [45], especially when the data is imbalanced.3 A PR curve plots precision against recall for every possible cThld of a machine learning algorithm (or for every sThld of a basic detector). Typically, there is a trade-off between precision and recall. Fig. 6 shows an exemplary PR curve derived from a random forest trained and tested on PV data. Two types of assumed operators’ preferences (1) “recall ≥ 0.75 and precision ≥ 0.6” and (2) “recall ≥ 0.5 and precision ≥ 0.9” are represented by the shaded rectangles. Configuration of cThlds is to seek a proper point on the PR curve. In Fig. 6, the triangle symbol is selected by the default cThld 0.5. Besides, we also show the results of another two accurate metrics: a F-Score based method, which selects the point that maximizes F-Score = ( 2·precision·recall ) / ( precision+recall ) ; SD(1,1), a metric similar to that in [46], which selects the point with the shortest Euclidean distance to the upper right corner where the precision and the recall are both perfect. We see that in Fig. 6, the PR curve has points inside both the rectangles, however, the default threshold only satisfies the preference (2) but not (1); F-Score and SD(1,1) do not satisfy either of the preferences. This is because these metrics select cThld without considering operators’ preferences.
 > 在描述我们如何配置cThld之前，我们首先使用Precision-Recall（PR）曲线来提供一些直觉。 PR曲线被广泛用于评估二元分类器的准确性[45]，特别是当数据不平衡时.3 PR曲线绘制了机器学习算法（或基本检测器的每个sThld）的每个可能cThld的精确度。 ）。通常，在精确度和召回之间存在权衡。图6示出了从在PV数据上训练和测试的随机森林导出的示例性PR曲线。两种类型的假定操作员偏好（1）“召回≥0.75且精度≥0.6”和（2）“召回≥0.5且精度≥0.9”由阴影矩形表示。 cThlds的配置是在PR曲线上寻找合适的点。在图6中，三角符号由默认的cThld 0.5选择。此外，我们还展示了另外两个准确指标的结果：基于F-Score的方法，选择最大化F-Score =（2·精确·召回）/（精确+召回）的点; SD（1,1），一个类似于[46]中的度量，它选择与右上角最短欧几里德距离的点，其中精度和召回都是完美的。我们看到在图6中，PR曲线在两个矩形内都有点，但是，默认阈值只满足偏好（2）而不是（1）; F-Score和SD（1,1）不满足任何一个偏好。这是因为这些指标选择cThld而不考虑操作员的偏好。
@@ -217,7 +217,7 @@ Before describing how we configure the cThld, we first use Precision-Recall (PR)
 Motivated by the above fact, we develop a simple but effective accuracy metric based on F-Score, namely PC-Score (preference centric score), to explicitly take operators’ preference into account when deciding cThlds. First, for each point (r, p) on the PR curve, we calculate its PC-Score as follows:
 > 在上述事实的推动下，我们开发了一个基于F-Score的简单但有效的准确度度量，即PC-Score（偏好中心分数），在决定cThld时明确考虑操作员的偏好。 首先，对于PR曲线上的每个点（r，p），我们计算其PC-Score如下：
 
-![](resources\formula1.PNG)
+![](resources/formula1.PNG)
 where R and P are from the operators’ preference “recall ≥ R and precision ≥ P”. Basically, the PC-Score measures the F-Score of (r, p). In order to identify the point satisfying operators’ preference (if one exists), we add an incentive constant of 1 to F-score if r <= R and p <= P. Since F-Score is no more than 1, this incentive constant ensures that the points satisfying the preference must have the PC-Score larger than others that do not. Hence, we choose the cThld corresponding to the point with the largest PC-Score. In Fig. 6, we see that the two points selected based on the PC-Score are inside the two shaded recectangles, respectively. Note that, in the case when a PR curve has no points inside the preference region, the PC-Score cannot find the desired points, but it can still choose approximate recall and precision.
 > 其中R和P来自操作员的偏好“召回≥R且精度≥P”。 基本上，PC-Score测量（r，p）的F值。 为了确定满足操作员偏好的点（如果存在），如果r <= R且p <= P，我们将F值的激励常数加1.由于F-Score不超过1，因此该激励 常量确保满足偏好的点必须具有比没有其他点的PC分数更大的PC分数。 因此，我们选择与PC-Score最大的点对应的cThld。 在图6中，我们看到基于PC-Score选择的两个点分别位于两个阴影的后角中。 请注意，在PR曲线在偏好区域内没有点的情况下，PC-Score无法找到所需的点，但仍可以选择近似回忆和精度。
 
@@ -232,12 +232,12 @@ To this end, an alternative method is k-fold cross-validation [47]. First, a his
 However, we found that this cross-validation method does not work quite well in our problem (§5.6). A potential explanation is that, as shown in Fig. 7, the best cThlds can differ greatly over weeks. As a result, in the cross-validation, the cThld that achieves the highest average performance over all the historical data might not be similar to the best cThld of the future week.
 > 但是，我们发现这种交叉验证方法在我们的问题中并不能很好地工作（第5.6节）。 一个可能的解释是，如图7所示，最好的cThlds可以在数周内有很大差异。 因此，在交叉验证中，对所有历史数据实现最高平均性能的cThld可能与未来一周的最佳cThld不相似。
 
-![](resources\figure7.PNG)
+![](resources/figure7.PNG)
 
 Our method is motivated by another observation in Fig. 7. That is, though the best cThlds changes over weeks, they can be more similar to the ones of the neighboring weeks. A possible explanation is that the underlying problems that cause KPI anomalies might last for some time before they are really fixed, so the neighboring weeks are more likely to have similar anomalies and require similar cThlds. Hence, we adopt EWMA [11] to predict the cThld of the i^th week (or the i^th test set) based on the historical best cThlds. Specifically, EWMA works as follows:
 > 我们的方法是由图7中的另一个观察所推动的。也就是说，尽管最好的cThlds在几周内发生了变化，但它们可能更接近相邻周的周期。 可能的解释是，导致KPI异常的潜在问题可能会在它们真正修复之前持续一段时间，因此相邻的周更可能具有类似的异常并且需要类似的cThld。 因此，我们采用EWMA [11]来基于历史最佳cThld预测第i周（或第i个测试集）的cThld。 具体来说，EWMA的工作原理如下：
 
-![](resources\formula2.PNG)
+![](resources/formula2.PNG)
 cThld^b^(i−1) is the best cThld of the (i − 1)th week. cThld^p^i is the predicted cThld of the i^th week, and also the one used for detecting the i^th-week data. \alpha \in 2 [0, 1] is the smoothing constant. For the first week, we use 5-fold cross-validation to initialize cThld^p^1. EWMA is simple but effective here as it does not require a lot of historical data to start. As \alpha increases, EWMA gives the recent best cThlds more influences in the prediction. We use \alpha = 0.8 in this paper to quickly catch up with the cThld variation. Our results show that the EWMA based cThld prediction method gains a noticeable improvement when compared with the 5-fold cross validation (§5.6).
 > cThld ^ b ^（i-1）是第（i-1）周的最佳cThld。 cThld ^ p ^ i是第i周的预测cThld，也是用于检测第i周数据的cThld。 \ alpha \ in 2 [0,1]是平滑常数。 在第一周，我们使用5倍交叉验证来初始化cThld ^ p ^ 1。 EWMA虽然简单但有效，因为它不需要大量的历史数据。 随着\ alpha增加，EWMA给出了最近cThlds在预测中更多的影响。 我们在本文中使用\ alpha = 0.8来快速赶上cThld变体。 我们的结果表明，与5折交叉验证（§5.6）相比，基于EWMA的cThld预测方法获得了显着的改进。
 > k折交叉验证（英语：k-fold cross-validation），将训练集分割成k个子样本，一个单独的子样本被保留作为验证模型的数据，其他k − 1个样本用来训练。交叉验证重复k次，每个子样本验证一次，平均k次的结果或者使用其它结合方式，最终得到一个单一估测。这个方法的优势在于，同时重复运用随机产生的子样本进行训练和验证，每次的结果验证一次，10次交叉验证是最常用的。
@@ -250,21 +250,21 @@ We implement Opprentice and 14 detectors with about 9500 lines of python, R, and
 Fig. 8 shows the evaluation flow. In the first four steps, we compare the accuracy of each component of Opprentice with different approaches. The accuracy of Opprentice as a whole is shown in the §5.6. In addition to the accuracy, the qualitative goal of Opprentice, i.e., being automatic, is also evaluated through directly applying Opprentice to three different KPIs without tuning. The only manual effort is to label the KPI data. We also interviewed the operators about their previous detector tuning time, and compare it with the labeling time (§5.7). Last, we evaluate the online detecting lag and the offline training time of Opprentice (§5.8). Next we first describe the data sets in §5.1 and the detectors we select in §5.2, then we show the evaluation results.
 > 图8显示了评估流程。 在前四个步骤中，我们将Opprentice的每个组件的准确性与不同的方法进行比较。 Opprentice整体的准确性见§5.6。 除了准确性之外，还通过直接将Opprentice应用于三个不同的KPI而不进行调整来评估Opprentice的定性目标，即自动化。 唯一的手动工作是标记KPI数据。 我们还采访了操作员他们之前的检测器调谐时间，并将其与标记时间进行了比较（§5.7）。 最后，我们评估了Opprentice的在线检测滞后和离线训练时间（§5.8）。 接下来我们首先描述§5.1中的数据集和我们在§5.2中选择的检测器，然后我们展示评估结果。
 
-![](resources\figure8.PNG)
+![](resources/figure8.PNG)
 
 5.1 Data sets
 
 We collect three representative types of KPI data (i.e., PV, #SR, and SRT) from a large search engine (§2.1). These data are labeled by the operators from the search engine using our labeling tool. There are 7.8%, 2.8%, and 7.4% data points are labeled as anomalies for PV, #SR, and SRT, respectively. Although the data we used are from the search engine, they are not special cases only for the search engine. For example, based on previous literature and our experience, the PV data we used are visually similar to other kinds of volume data. For example, the PV of other Web-based services [1, 49], the RTT (round trip time) [6] and the aggregated traffic volume [5] of an ISP, and online shopping revenue. So we believe that these three KPIs are sufficient to evaluate the idea of Opprentice, and we consider a more extensive evaluation with data from other domains beyond search as our future work. Table 2 shows several ways to generate training sets and test sets from the labeled data sets.
 > 我们从大型搜索引擎（第2.1节）收集三种代表性的KPI数据类型（即PV，＃SR和SRT）。 这些数据由搜索引擎的操作员使用我们的标签工具进行标记。 有7.8％，2.8％和7.4％的数据点分别被标记为PV，＃SR和SRT的异常。 虽然我们使用的数据来自搜索引擎，但它们不仅仅是搜索引擎的特殊情况。 例如，根据以前的文献和我们的经验，我们使用的PV数据在视觉上类似于其他类型的体数据。 例如，其他基于Web的服务的PV [1,49]，RTT（往返时间）[6]和ISP的聚合流量[5]以及在线购物收入。 因此，我们认为这三个KPI足以评估Opprentice的概念，并且我们考虑使用来自搜索之外的其他领域的数据进行更广泛的评估，作为我们未来的工作。 表2显示了从标记数据集生成训练集和测试集的几种方法。
 
-![](resources\table2.PNG)
+![](resources/table2.PNG)
 
 5.2  Detector and Parameter Choices
 
 According to the detector requirements (§4.3.2), in this proof of concept prototype, we evaluate Opprentice with 14 widely-used detectors (Table 3).
 > 根据检测器要求（§4.3.2），在这个概念验证原型中，我们使用14种广泛使用的检测器来评估Opprentice（表3）。
 
-![](resources\table3.PNG)
+![](resources/table3.PNG)
 
 Two of the detectors were already used by the search engine we studied before this study. One is namely “Diff”, which simply measures anomaly severities using the differences between the current point and the point of last slot, the point of last day, and the point of last week. The other one, namely “MA of diff”, measures severities using the moving average of the difference between current point and the point of last slot. This detector is designed to discover continuous jitters. The other 12 detectors come from previous literatures. Among these detectors, there are two variants of detectors using MAD (Median Absolute Deviation) around the median, instead of the standard deviation around the mean, to measure anomaly severities. This patch can improve the robustness to missing data and outliers [3, 15]. In the interest of space, the details of these detectors and the ways they produce severities are not introduced further, but can be found in the references in Table 3. The sampled parameters of each detector are also shown in Table 3. Here, the parameter of ARIMA is estimated from the data. For other detectors, we sweep their parameter space.
 > 我们在本研究之前研究过的搜索引擎已经使用了两个检测器。一个是“差异”，它简单地使用当前点和最后一个时间点之间的差异，最后一天的点和上周的点来测量异常严重性。另一个，即“差异的MA”，使用当前点和最后一个时隙之间的差的移动平均来测量严重性。该检测器旨在发现连续的抖动。其他12个检测器来自以前的文献。在这些检测器中，有两种检测器使用围绕中位数的MAD（中值绝对偏差），而不是围绕均值的标准偏差来测量异常严重性。该补丁可以提高对丢失数据和异常值的鲁棒性[3,15]。为了节省空间，这些检测器的细节及其产生严重性的方式没有进一步介绍，但可以在表3的参考文献中找到。每个检测器的采样参数也显示在表3中。这里，参数根据数据估算ARIMA。对于其他检测器，我们扫描其参数空间。
@@ -282,7 +282,7 @@ Now we present the evaluation results. First, we compare the accuracy of random 
 First, in Fig. 9, we would like to compare random forests with the 14 basic detectors with different parameter settings (133 configurations) in Table. 3. We also compare random forests with two static combination methods: the normalization schema [21] and the majority-vote [8]. These two methods are designed to combine different detectors, but they treat them equally no matter their accuracy. For comparison purposes, in this paper, we also use these two methods to combine the 133 configurations as random forests do. All the above approaches detect the data starting from the 9th week. The first 8 weeks are used as the initial training set for random forests.
 > 首先，在图9中，我们希望将随机森林与表中不同参数设置（133种配置）的14种基本检测器进行比较。 我们还将随机森林与两种静态组合方法进行比较：标准化模式[21]和多数投票[8]。 这两种方法旨在结合不同的检测器，但无论它们的准确性如何，它们都能平等对待它们。 为了进行比较，在本文中，我们还使用这两种方法将133种配置组合为随机森林。 所有上述方法都从第9周开始检测数据。 前8周用作随机森林的初始训练集。
 
-![](resources\figure9.PNG)
+![](resources/figure9.PNG)
 
 Focusing on the left side of Fig. 9, we see that for the AUCPR, random forests rank the first in Fig. 9(a) and Fig. 9(b), and rank the second in Fig. 9(c), where the AUCPR of random forests is only 0.01 less than the highest one. On the other hand, the AUCPR of the two static combination methods is always ranked low. This is because most configurations are inaccurate (having very low AUCPR in Fig. 9), as we do not manually select proper detectors or tune their parameters. However, the two static combination methods treat all the configurations with the same priority (e.g., equally weighted vote). Thus, they can be significantly impacted by inaccurate configurations. 
 > 着眼于图9的左侧，我们看到对于AUCPR，随机森林在图9（a）和图9（b）中排名第一，在图9（c）中排名第二，其中 随机森林的AUCPR仅比最高森林少0.01。 另一方面，两种静态组合方法的AUCPR总是排在低位。 这是因为大多数配置都不准确（图9中的AUCPR非常低），因为我们没有手动选择合适的检测器或调整它们的参数。 然而，两种静态组合方法处理具有相同优先级的所有配置（例如，相等加权投票）。 因此，它们可能会受到不准确配置的严重影响。
@@ -290,14 +290,14 @@ Focusing on the left side of Fig. 9, we see that for the AUCPR, random forests r
 The right side of Fig. 9 shows the PR curves of random forests, two combination methods, and the top 3 highest-AUCPR basic detectors. We observe that the best basic detectors are different for each KPI, which indicates that the operators are interested in different kinds of anomalies for each KPI. Table 4 shows the maximum precision of these approaches when their recall satisfies the operators’ preference (recall ≥ 0.66). We find that for all the KPIs, random forests achieve a high precision (greater than 0.8). The result shows that random forests significantly outperforms the two static combination methods, and perform similarly to or even better than the most accurate basic detector for each KPI.
 > 图9的右侧显示了随机森林的PR曲线，两种组合方法和前3种最高AUCPR基本检测器。 我们观察到每个KPI的最佳基本检测器是不同的，这表明操作员对每个KPI的不同类型的异常感兴趣。 表4显示了这些方法在其召回满足操作员偏好时的最大精度（召回率≥0.66）。 我们发现，对于所有KPI，随机森林实现了高精度（大于0.8）。 结果表明，随机森林明显优于两种静态组合方法，并且对于每个KPI，其性能与最准确的基本检测器相似甚至更好。
 
-![](resources\table4.PNG)
+![](resources/table4.PNG)
 
 5.3.2 Random Forests vs. Other Algorithms
 
 We also compare random forests with several other machine learning algorithms: decision trees, logistic regression, linear support vector machines (SVMs), and naive Bayes. All these algorithms are trained and tested on I1 in Table 2. To illustrate the impact of irrelevant features (e.g., the configurations with low AUCPR in Fig. 9) and redundant features (e.g., a detector with similar parameter settings), we train these learning algorithms by using one feature for the first time, and adding one more feature each time. The features are added in the order of their mutual information [51], a common metric of feature selection. In Fig. 10, we observe that, while the AUCPR of other learning algorithms is unstable and decreased as more features are used, the AUCPR of random forests is still high even when all the 133 features are used. The result demonstrates that random forests are quite robust to irrelevant and redundant features in practice.
 > 我们还将随机森林与其他几种机器学习算法进行比较：决策树，逻辑回归，线性支持向量机（SVM）和朴素贝叶斯。 所有这些算法都在表2中的I1上进行了训练和测试。为了说明不相关特征（例如，图9中具有低AUCPR的配置）和冗余特征（例如，具有类似参数设置的检测器）的影响，我们训练这些 首次使用一个特征学习算法，每次添加一个特征。 这些特征按其互信息的顺序添加[51]，这是特征选择的通用度量。 在图10中，我们观察到，虽然其他学习算法的AUCPR不稳定并且随着使用更多特征而减少，但即使使用所有133个特征，随机森林的AUCPR仍然很高。 结果表明，随机森林在实践中对于不相关和冗余的特征非常强大。
 
-![](resources\figure10.PNG)
+![](resources/figure10.PNG)
 
 5.4 Incremental Retraining
 > 增量再训练
@@ -305,7 +305,7 @@ We also compare random forests with several other machine learning algorithms: d
 After demonstrating the accuracy and stability of random forests, we want to show the effects of different training sets. We will focus only on random forests in this and the following evaluation steps. We compare three methods of generating training sets: I4, F4, and R4 in Table 2. Fig. 11 shows the AUCPR of random forests on different training sets. We see that I4 (also called incremental retraining) outperforms the other two training sets in most cases. This result is consistent with the challenge mentioned earlier that an arbitrary data set is unlikely to contain enough kinds of anomalies. In Fig. 11(b) we see that the three training sets result in similar AUCPR. This implies that the anomaly types of #SR are relatively simple and do not change much, so that they can be captured well by any of these training sets. Overall, since labeling anomalies does not cost much time (§5.7), we believe that incremental retraining is a more general and accurate method to generate training sets.
 > 在证明了随机森林的准确性和稳定性之后，我们希望展示不同训练集的效果。 我们将仅关注随机森林以及以下评估步骤。 我们比较了三种生成训练集的方法：表2中的I4，F4和R4。图11显示了不同训练集上随机森林的AUCPR。 在大多数情况下，我们看到I4（也称为增量训练）优于其他两种训练集。 该结果与前面提到的挑战一致，即任意数据集不太可能包含足够类型的异常。 在图11（b）中，我们看到三个训练集导致类似的AUCPR。 这意味着#SR的异常类型相对简单并且变化不大，因此可以通过任何这些训练集很好地捕获它们。 总的来说，由于标记异常并不需要花费很多时间（第5.7节），我们认为增量再训练是生成训练集的更通用和准确的方法。
 
-![](resources\figure11.PNG)
+![](resources/figure11.PNG)
 
 5.5 PC-Score vs. Other Accuracy Metrics
 
@@ -321,7 +321,7 @@ Focusing on the heat maps, we see that while the points obtained by the other th
 We also notice that it is not easy to satisfy the preference for all the weeks, because anomalies are very rare in some weeks. For example, we find that for the weeks where no point satisfies the moderate preference, anomalies are 73% and 78% fewer than other weeks for PV and #SR, respectively. Thus it is inevitable to generate more false positives in order to identify those few anomalies, leading to low precision. In addition, missing just a few anomalies can lead to an obvious degradation in recall. Fortunately, as the anomalies are few in those weeks, relatively low precision or recall would not cause a large number of false positives or false negatives. For example, if there are ten anomalous data points and we identify four of them (40% recall), we would miss only six anomalous data points; in such case, if we have 40% precision, we would just identify six false positives. The operators we work with suggest that they are actually OK with this small number of false positives or false negatives.
 > 我们还注意到，要满足所有周的偏好并不容易，因为异常在几周内非常罕见。例如，我们发现在没有点满足适度偏好的几周内，异常分别比PV和#SR的其他周减少了73％和78％。因此，为了识别那些少数异常，产生更多误报是不可避免的，导致精度低。此外，只缺少一些异常情况可能会导致召回率明显下降。幸运的是，由于这些周的异常很少，相对较低的精确度或召回率不会导致大量误报或漏报。例如，如果有十个异常数据点并且我们识别其中四个（40％召回），我们将只错过六个异常数据点;在这种情况下，如果我们有40％的精度，我们只会识别六个误报。我们合作的操作员表示他们实际上可以处理这么少的误报或漏报。
 
-![](resources\figure12.PNG)
+![](resources/figure12.PNG)
 
 5.6 EWMA vs. 5-Fold for cThld Prediction
 
@@ -331,14 +331,14 @@ Previously, we show the offline evaluation of different metrics for cThld config
 The result shows that, for PV, #SR, and SRT, the EWMA achieves 40%, 23%, and 110% more points inside the shaded regions, respectively, when compared with the 5-fold cross validation. In total, 8403 (7.3%), 2544 (2.1%), and 86 (6.4%) data points are identified as anomalies by Opprentice in the test sets (after the 9th week) for the three KPIs, respectively (not shown). We notice that there are some points falling outside of the shaded regions, such as the window between 58 and 70 in Fig. 13(a). It is mainly because the anomalies during those weeks are quite rare. For example, there are only on average 4% anomalous points in the ground truth of PV data for the window between 58 and 70. However, as mentioned earlier in §5.5, in such case, a little low precision or recall would not generate many false positives or false negatives for operators. In summary, Opprentice can automatically satisfy or approximate the operators’ accuracy preference.
 > 结果表明，对于PV，＃SR和SRT，与5倍交叉验证相比，EWMA分别在阴影区域内实现了40％，23％和110％的点。 总共，8403（7.3％），2544（2.1％）和86（6.4％）数据点分别被测试集（第9周之后）中的Opprentice识别为三个KPI的异常（未显示）。 我们注意到有一些点落在阴影区域之外，例如图13（a）中58到70之间的窗口。 这主要是因为这几周的异常情况非常罕见。 例如，对于58到70之间的窗口，PV数据的基本事实中平均只有4％的异常点。但是，如前面§5.5所述，在这种情况下，稍微低精度或召回不会产生很多 操作员的误报或漏报。 总之，Opprentice可以自动满足或接近操作员的准确性偏好。
 
-![](resources\figure13.PNG)
+![](resources/figure13.PNG)
 
 5.7 Labeling Time vs. Tuning Time
 
 Next, we show the time cost of labeling, the only manual job required for operators when they use Opprentice. Fig. 14 shows the operators’ labeling time when they label the three types of KPI data using our tool (§4.2). The result shows that the labeling time of one-month data basically increases as the number of anomalous windows in that month. An anomalous window refers to a window of continuous anomalies derived from one label action. Among the three KPIs, SRT requires less labeling time for each month of data because it has less data points in a month as its data interval is 60 minutes. Overall, the labeling time of one-month data is less than 6 minutes. The total labeling time for PV, #SR, and SRT is 16, 17, and 6 minutes, respectively. One intuitive reason for the low labeling overhead is that the operators each time label a window of anomalies rather than labeling individual anomalous data points one by one. The anomalous windows can be much fewer (Fig. 14) than the anomalous points in the data.
 > 接下来，我们将显示标签的时间成本，这是操作员在使用Opprentice时所需的唯一手动作业。图14显示了操作员使用我们的工具标记三种类型的KPI数据时的标记时间（§4.2）。结果表明，一个月数据的标注时间基本上随着该月异常窗口的数量而增加。异常窗口是指从一个标签动作导出的连续异常窗口。在三个KPI中，SRT每个月的数据需要较少的标记时间，因为它的数据间隔为60分钟，因此一个月内的数据点较少。总的来说，一个月数据的标签时间不到6分钟。 PV，＃SR和SRT的总标记时间分别为16,17和6分钟。标签开销低的一个直观原因是操作员每次都标记异常窗口而不是逐个标记单个异常数据点。异常窗口可以比数据中的异常点少得多（图14）。
 
-![](resources\figure14.PNG)
+![](resources/figure14.PNG)
 
 To show the value of how Opprentice help reduce operators’ manual efforts, we also present some anecdotal examples of operators’ tuning time of detectors, including the time they learn the detectors and understand their parameters. We interviewed three operators from the search engine, who have experienced tuning detectors before. The first operator uses SVD, and he said it took him about 8 days to tune the detector; the second operator uses Holt-winters and historical average, and he spent about 12 days tuning these two detectors; the third operator applies time series decomposition, and he said that after the detector was implemented, it further cost him about 10 days to test and tune the detector. In the above cases, after days of tuning, only the first operator’ detector works relatively well; yet, the other two operators are still not satisfied with the accuracy of their detectors, and finally abandon them. We have compared the accuracy of Opprentice with these basic detectors in §5.3.1.
 > 为了展示Opprentice如何帮助减少操作员手动工作的价值，我们还提供了一些操作员调整检测器时间的轶事示例，包括他们学习检测器和了解其参数的时间。我们采访了搜索引擎中的三位操作员，他们之前经历过调谐检测器。第一个操作员使用SVD，他说他花了大约8天来调谐检测器;第二个操作员使用Holt-winters和历史平均值，他花了大约12天调整这两个检测器;第三个算子应用时间序列分解，他说在检测器实施后，它还需要大约10天的时间来测试和调整检测器。在上述情况下，经过几天的调整，只有第一个操作员的检测器工作得相对较好;然而，其他两家操作员仍然不满意其检测器的准确性，最后放弃了它们。我们在§5.3.1中比较了Opprentice与这些基本检测器的准确性。

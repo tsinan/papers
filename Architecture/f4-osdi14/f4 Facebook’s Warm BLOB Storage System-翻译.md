@@ -81,7 +81,7 @@ BLOBs are immutable binary data. They are created once, read potentially many ti
 Figure 2 shows the distribution of sizes for five types of BLOBs. There is a significant amount of diversity in the sizes of BLOBs, which has implications for our design as discussed in Section 5.6.
 > 图2显示了五种BLOB的大小分布。 BLOB的大小存在很大差异，这对我们的设计有影响，如第5.6节所述。
 
-![](resources\figure2.PNG)
+![](resources/figure2.PNG)
 
 > CDF:累计分布函数表示：对离散变量而言，所有小于等于a的值出现概率的和
 
@@ -105,7 +105,7 @@ The nine BLOB types include Profile Photos, Photos, HD Photos, Mobile Sync Photo
 Figure 3 shows the relative request rate, requests-per-object-per-hour, for content of a given age. The two-week trace of 0.1% of reads was used to create this figure. The age of each object being read is recorded and these are bucketed into 1-day intervals. We then count the number of requests to the daily buckets for each hour in the trace and report the mean—the medians are similar but noisier. Absolute values are denormalized to increase readability so each line is relative to only itself. Points mark order-of-magnitude decreases.
 > 图3显示了给定年龄内容的相对请求率，每小时每对象请求数。 使用0.1％读数的两周痕迹来创建该数字。 记录每个被读物体的年龄，并将它们分成1天的间隔。 然后，我们计算跟踪中每小时每日桶的请求数，并报告平均值 - 中位数相似但噪声较大。 绝对值被非规范化以增加可读性，因此每一行仅相对于其自身。 点标记数量级减少。
 
-![](resources\figure3.PNG)
+![](resources/figure3.PNG)
 
 The existence of temperature zones is clear in the trend of decreasing request rates over time. For all nine types, content less than one day old receives more than 100 times the request rate of one-year-old content. For eight of the types the request rate drops by an order of magnitude in less than a week, and for six of the types the request rate drops by 100x in less than 60 days.
 > 随着时间的推移，请求率下降的趋势显然存在温度区。 对于所有九种类型，不到一天的内容接收超过一年内容的请求率的100倍。 对于八种类型，请求率在不到一周的时间内下降了一个数量级，对于六种类型，请求率在不到60天内下降了100倍。
@@ -119,7 +119,7 @@ First, we examine the request rate. To determine where to draw the line between 
 Figure 4 shows the 99th percentile or near-worst-case request load for BLOBs of various types grouped by age. The two-week trace of 0.1% of reads was used to create this figure. The age of each object read is recorded and these are bucketed into intervals equivalent to the time needed to create 1 TB of that BLOB type. For instance, if 1 TB of a type is created every 3600 seconds, then the first bucket is for ages of 0-3599 seconds, the second is for 3600-7200 seconds, and so on.1 We then compensate for the 0.1% sampling rate by looking at windows of 1000 seconds. We report the 99th percentile request rate for these windows, i.e., we report the 99th percentile count of requests in a 1000 second window across our two-week trace for each age bucket. The 4TB disks used in f4 can deliver a maximum of 80 Input/Output Operations Per Second (IOPS) while keeping per-request latency acceptably low. The figure shows this peak warm storage throughput at 20 IOPS/TB.
 > 图4显示了按年龄分组的各种类型BLOB的第99百分位数或接近最差情况的请求负载。 使用0.1％读数的两周痕迹来创建该数字。 记录每个对象读取的年龄，并将这些对象划分为相当于创建该BLOB类型1 TB所需时间的间隔。 例如，如果每3600秒创建1 TB类型，那么第一个桶的年龄为0-3599秒，第二个桶为3600-7200秒，依此类推.1然后我们补偿0.1％的采样 通过查看1000秒的窗口率。 我们报告了这些窗口的第99百分位请求率，即，我们在每个年龄段的两周跟踪中报告1000秒窗口中的第99百分位数的请求数。 f4中使用的4TB磁盘最多可以提供80个每秒输入/输出操作数（IOPS），同时保持每个请求的延迟可接受的低。 该图显示了20 IOPS / TB时的峰值温存储吞吐量。
 
-![](resources\figure4.PNG)
+![](resources/figure4.PNG)
 
 For seven of the nine types the near-worst-case throughput is below the capacity of the warm storage system in less than a week. For Photos, it takes ~3 months to drop below the capacity of warm storage and for Profile Photos it takes a year.
 > 对于九种类型中的七种，在不到一周的时间内，接近最坏情况的吞吐量低于温存储系统的容量。 对于照片，需要大约3个月的时间才能降低到温储存的容量，对于个人照片则需要一年的时间。
@@ -133,7 +133,7 @@ Combining the deletion analysis with the request rate analysis yields an age of 
 **Warm Content is Large and Growing** We finish the case for warm storage by demonstrating that the percent-age of content that is warm is large and continuing to grow. Figure 5 gives the percentage of content that is warm for three-month intervals for six BLOB types.
 > **温暖的内容是大而且不断增长**我们通过证明温的内容的百分比年龄大并且继续增长来完成温存储的情况。 图5给出了六种BLOB类型的三个月间隔内容的百分比。
 
-![](resources\figure5.PNG)
+![](resources/figure5.PNG)
 
 We use the above analysis to determine the warm cutoff for each type, i.e., one month for most types. This figure reports the median percentage of content for each type that is warm in three-month intervals from 9-6 months ago, 6-3 months ago, and 3 months ago to now.
 > 我们使用上述分析来确定每种类型的温度截止值，即大多数类型的一个月。 该数字报告了从9-6个月前，6-3个月前和3个月前到现在的三个月间隔内每种类型的温内容的中位数百分比。
@@ -160,7 +160,7 @@ Each volume is comprised of three files: a data file, an index file, and a journ
 The full BLOB storage architecture is shown in Figure 6. Creates enter the system at the router tier (C1) and are directed to the appropriate host in the hot storage system (C2). Deletes enter the system at the router tier (D1) and are directed to the appropriate hosts in appropriate storage system (D2). Reads enter the system at the caching stack (R1) and, if not satisfied there, traverse through the transformer tier (R2) to the router tier (R3) that directs them to the appropriate host in the appropriate storage system (R4).
 > 完整的BLOB存储体系结构如图6所示。创建在路由层（C1）进入系统，并定向到热存储系统（C2）中的相应主机。 删除进入路由器层（D1）的系统，并定向到适当存储系统（D2）中的相应主机。 读取在缓存堆栈（R1）处进入系统，如果未命中，则通过变换器层（R2）遍历到路由器层（R3），路由器层（R3）将它们定向到适当存储系统（R4）中的相应主机。
 
-![](resources\figure6.PNG)
+![](resources/figure6.PNG)
 
 **Controller** The controller ensures the smooth functioning of the overall system. It helps with provisioning new store machines, maintaining a pool of unlocked volumes, ensuring that all logical volumes have enough physical volumes backing them, creating new physical volumes if necessary, and performing periodic maintenance tasks such as compaction and garbage collection. 
 > **控制器**控制器确保整个系统的顺利运行。 它有助于配置新的存储服务器，维护未锁定的卷池，确保所有逻辑卷都有足够的物理卷备份，必要时创建新的物理卷，以及执行定期维护任务，如压缩和垃圾回收。
@@ -282,7 +282,7 @@ The index files use triple replication within a cell. The files are small enough
 The data file with the actual BLOB data is encoded and stored via a Reed-Solomon(n, k) code. Recent f4 cells use n = 10 and k = 4. The file is logically divided up into contiguous sequences of n blocks, each of size b. For each such sequence of n blocks, k parity blocks are generated, thus forming a logical stripe of size n + k blocks. For a given block in a stripe, the other blocks in the stripe are considered to be its companion blocks. If the file is not an integral multiple of n blocks, it is zero-padded to the next multiple. In normal operation BLOBs are read directly from their data block. If a block is unavailable it can be recovered by decoding any n of its companion and parity blocks. A subset of a block, corresponding to a BLOB, can also be decoded from only the equivalent subsets of any n of its companion and parity blocks. Figure 7 shows the relationship between BLOBs, blocks, strips, and volumes.
 > 具有实际BLOB数据的数据文件通过Reed-Solomon（n，k）代码进行编码和存储。 最近的f4 cell使用n = 10和k = 4.该文件在逻辑上被分成n个block的连续序列，每个block的大小为b。 对于n个block的每个这样的序列，生成k个奇偶校验块，从而形成大小为n + k个block的逻辑条带。 对于条带中的给定块，条带中的其他块被视为其伴随块。 如果文件不是n个块的整数倍，则将其填充到下一个倍数。 在正常操作中，BLOB直接从其数据块中读取。 如果块不可用，则可以通过解码其任何n个伴随块和奇偶校验块来恢复它。 对应于BLOB的块的子集也可以仅从其伴随和奇偶校验块中的任何n个的等效子集解码。 图7显示了BLOB，块，条带和卷之间的关系。
 
-![](resources\figure7.PNG)
+![](resources/figure7.PNG)
 
 The block-size for encoding is chosen to be a large value—typically 1 GB—for two reasons. First, it decreases the number of BLOBs that span multiple blocks and thus require multiple I/O operations to read. Second, it reduces the amount of per-block metadata that f4 needs to maintain. We avoid a larger block size because of the larger overhead for rebuilding blocks it would incur.
 > 编码的block大小选择为较大的值 - 通常为1 GB  - 有两个原因。 首先，它减少了跨越多个块的BLOB的数量，因此需要多个I / O操作来读取。 其次，它减少了f4需要维护的每块元数据的数量。 我们避免了更大的块大小，因为重建块会产生更大的开销。
@@ -290,7 +290,7 @@ The block-size for encoding is chosen to be a large value—typically 1 GB—for
 Figure 8 shows a f4 cell. Its components include storage nodes, name nodes, backoff nodes, rebuilder nodes, and coordinator nodes. 
 > 图8显示了f4 cell。 其组件包括存储节点storage nodes，名称节点name nodes，退避节点backoff nodes，重建节点rebuilder nodes和协调节点coordinator nodes。
 
-![](resources\figure8.PNG)
+![](resources/figure8.PNG)
 
 **Name Node** The name node maintains the mapping between data blocks and parity blocks and the storage nodes that hold the actual blocks. The mapping is distributed to storage nodes via standard techniques [3, 18]. Name nodes are made fault tolerant with a standard primary-backup setup.
 > **名称节点**名称节点维护数据块和奇偶校验块与保存实际块的存储节点之间的映射。 映射通过标准技术分发到存储节点[3,18]。 使用标准主备份设置使名称节点具有容错能力。
@@ -343,7 +343,7 @@ Given the rarity of datacenter failure events we sought a solution that could fu
 Geo-replicated XOR coding provides datacenter fault tolerance by storing the XOR of blocks from two different volumes primarily stored in two different datacenters in a third datacenter as shown in Figure 9. Each data and parity block in a volume is XORed with the equivalent data or parity block in the other volume, called its buddy block, to create their XOR block. These XOR blocks are stored with normal triple-replicated index files for the volumes. Again, because the index files are tiny relative to the data, coding them is not worth the added complexity.
 > 地理复制的XOR编码通过存储来自主要存储在第三个数据中心的两个不同数据中心的两个不同卷的块的XOR来提供数据中心容错，如图9所示。卷中的每个数据和奇偶校验块与等效数据进行异或或 另一个卷中的奇偶校验块，称为伙伴块，用于创建其XOR块。 这些XOR块与卷的正常三重复索引文件一起存储。 同样，因为索引文件相对于数据来说很小，所以编码它们不值得增加复杂性。
 
-![](resources\figure9.PNG)
+![](resources/figure9.PNG)
 
 The 2.1 replication factor comes from the 1.4X for the primary single cell replication for each of two volumes and another 1.4X for the geo-replicated XOR of the two volumes: (1.4∗2+1.4) / 2 = 2.1.
 > 2.1复制因子来自两个卷中每个卷的主要单个单元复制的1.4倍，以及两个卷的地理复制XOR的1.4倍：(1.4 * 2 + 1.4) / 2 = 2.1。
@@ -363,7 +363,7 @@ Single f4 cells are tolerant to disk, host, and rack failures. Geo-replicating X
 > **失败域和块放置**图10说明了条带中的数据块如何布局在f4单元中。 机架是最大的故障域，也是我们最关心的问题。 给定n个数据块和k个奇偶校验块的条带S，我们尝试布置块，使得每个块位于不同的机架上，并且至少在不同的节点上。 这要求单元具有至少n + k个机架，大小大致相同。 我们当前的实施最初规定了块，尽力将每个块放在不同的机架上。 放置平衡器进程检测并纠正将条带块放置在同一机架上的任何罕见违规。
 
 
-![](resources\figure10.PNG)
+![](resources/figure10.PNG)
 
 Laying blocks for a stripe out on different racks also provide resilience to host and disk failures. Blocks in a stripe on different racks will also be on different hosts and disks.
 > 在不同机架上铺设条带块也可以提供主机和磁盘故障的弹性。 不同机架上条带中的块也将位于不同的主机和磁盘上。
@@ -389,7 +389,7 @@ The router tier will detect the primary’s cell datacenter failure and send a B
 **Fault Tolerance for All** Our primary fault tolerance design concern for f4 was providing four level of fault tolerance for data files, the dominant resource for warm BLOB storage, at a low effective-replication-factor. We also require that the other components of a cell be tolerance to the same faults, but use simpler and more common techniques because they are not the dominant resource. Table 1 summarizes the techniques we use for fault tolerance for all components of a cell for failures within a cell. We do not provide datacenter fault tolerance for the other components of a cell because they are fate-sharing, i.e., datacenter failures take down entire cells.
 > **对所有人的容错**我们对f4的主要容错设计关注是为数据文件提供四级容错，这是温BLOB存储的主要资源，处于低有效复制因子。 我们还要求单元的其他组件容忍相同的故障，但使用更简单和更常用的技术，因为它们不是主要资源。 表1总结了我们用于单元的所有组件的容错的技术，以用于单元内的故障。 我们不为单元的其他组件提供数据中心容错，因为它们是命运共享，即数据中心故障会占用整个单元。
 
-![](resources\table1.PNG)
+![](resources/table1.PNG)
 
 5.6 Additional Design Points
 
@@ -443,7 +443,7 @@ The latter two points (3) and (4) are fundamental to our design. We validate poi
 **Caching Stack Enables f4** Figure 11a shows the normalized request rate for BLOBs before and after the caching stack for different groups of BLOBs based on age. The Figure shows the caching stack reduces the request rate for all BLOBs to ~30% of what it would have otherwise been. Caching is the most effective for the most popular content, which we expect to be newer content. Thus, we expect the reduction in load from the cache to be less for older content. Our data shows this with the caching stack reducing the request rate to 3+ month old BLOBs to ~55% of its pre-caching volume. This reduction is still significant, however, without it the load for these BLOBs would increase （100 - 55）/ 55 = 82%.
 > **缓存堆栈启用f4 **图11a显示了基于年龄的不同BLOB组的缓存堆栈之前和之后的BLOB的规范化请求速率。 该图显示了缓存堆栈将所有BLOB的请求率降低到原来的30％。 缓存对于最受欢迎的内容最有效，我们期望这些内容是更新的内容。 因此，我们预计缓存中的负载减少对较旧内容的影响较小。 我们的数据显示，缓存堆栈将请求率降低到3个月以前的BLOB，达到其预缓存量的约55％。 然而，这种减少仍然是显着的，没有它，这些BLOB的负荷将增加（100-55）/ 55 = 82％。
 
-![](resources\figure11.PNG)
+![](resources/figure11.PNG)
 
 **Haystack Enables f4** Figure 11b shows the CDF of the age of read BLOBs. Haystack handles all read requests for BLOBs less than 3 months old and some of the read request for BLOBs older than that.4 This accounts for more than 50% of the read requests, significantly lowering the load on f4.
 > ** Haystack启用f4 **图11b显示了读取BLOB年龄的CDF。 Haystack处理所有不到3个月的BLOB读取请求以及一些早于此的BLOB读取请求.4这占读取请求的50％以上，显着降低了f4的负载。
@@ -459,7 +459,7 @@ This subsection characterizes f4’s performance in production and demonstrated 
 **f4 Handles Peak Load** The IOPS requirement for realtime requests is determined by the peak load rather than average requirement, so we need to look at peak request rates at a fine granularity. Figure 12 shows load in IOPS/TB for the f4 cluster with the highest load over the course of a week. The data is gathered from the 0.1% of reads trace and we compensate for the sampling rate by examining windows of 1000 seconds (instead of 1 second). Our trace identifies only the cluster for each request, so we randomly assign BLOBs to disks and use this assignment to determine the load on disks, machines, and racks. The maximum across all disk, machines, and racks is reported for each time interval.
 > ** f4处理峰值负载**实时请求的IOPS要求由峰值负载而不是平均需求决定，因此我们需要以精细的粒度查看峰值请求率。 图12显示了f4集群的IOPS / TB负载，在一周内负载最高。 数据从0.1％的读数跟踪中收集，我们通过检查1000秒（而不是1秒）的窗口来补偿采样率。 我们的跟踪仅标识每个请求的集群，因此我们将BLOB随机分配给磁盘并使用此分配来确定磁盘，计算机和机架上的负载。 每个时间间隔报告所有磁盘，计算机和机架的最大值。
 
-![](resources\figure12.PNG)
+![](resources/figure12.PNG)
 
 The figure show the request rate has predictable peaks and troughs that result from different users across the globe accessing the site at different times and this can vary load by almost 2x during the course of a day.
 > 该图显示请求率具有可预测的峰值和谷值，这些峰值和谷值是全球不同用户在不同时间访问站点所导致的，这可能会在一天中将负载变化近2倍。
@@ -470,7 +470,7 @@ The maximum rack load is indistinguishable from the cluster load in the figure a
 **f4 Provides Low Latency** Figure 13 shows the same region read latency for Haystack and f4. In our system, most (>99%) of the storage tier read accesses are within the same region. The latencies for f4 reads are higher than those for Haystack, e.g., the median read latency is 14 ms for Haystack and 17 ms for f4. But, the latency for f4 are still sufficiently low to provide a good user experience: the latency for reads in f4 is less than 30 ms for 80% of them and 80 ms for 99% of them.
 > ** f4提供低延迟**图13显示了Haystack和f4的相同区域读取延迟。 在我们的系统中，大多数（> 99％）存储层读取访问都在同一区域内。 f4读数的延迟高于Haystack的延迟，例如，Haystack的中值读取延迟为14 ms，f4的读取延迟为17 ms。 但是，f4的延迟仍然足够低，无法提供良好的用户体验：f4读取的延迟时间低于30ms的占80％，低于80ms的占99％。
 
-![](resources\figure13.PNG)
+![](resources/figure13.PNG)
 
 6.4 f4 is Resilient to Failure
 
@@ -481,7 +481,7 @@ f4 is resilient to datacenter failures because we replicate data in multiple geo
 Our implementation places blocks on different racks initially and continually monitors and rebalances blocks so they are on different racks due to failure. The result is that blocks are almost always in different failure domains, which we assume to be true for the rest of this analysis. Figure 14 shows the CDF of BLOBs that are unavailable if N disks, hosts, or racks fail in an f4 cell. Worst case, expected case, and best case CDFs are plotted. All results assume we lose some data when there are more than 4 failures in a stripe, though there is work that can recover some of this data [22] we do not implement it. Worst case results assume failures are assigned to one or a small number of blocks first and that parity blocks are the last to fail. Best case results assume failures are assigned to individual racks first and that parity blocks are the first to fail. Non-parity blocks can be used to individually extract the BLOBs they enclose. Expected results are calculated by the Monte Carlo method. There are 30 disks/host, 15 hosts/rack, and 14 racks.
 > 我们的实现最初将块放在不同的机架上，并持续监视和重新平衡块，因此它们由于故障而位于不同的机架上。结果是块几乎总是在不同的故障域中，我们认为这对于该分析的其余部分是正确的。图14显示了在f4单元中N个磁盘，主机或机架出现故障时不可用的BLOB的CDF。绘制了最坏情况，预期案例和最佳案例CDF。所有结果都假设我们在条带中存在4个以上的故障时会丢失一些数据，尽管有些工作可以恢复某些数据[22]我们没有实现它。最坏情况的结果假设首先将故障分配给一个或少量块，并且奇偶校验块是最后一个失败的。最佳案例结果假设首先将故障分配给各个机架，并且奇偶校验块是第一个失败的。非奇偶校验块可用于单独提取它们所包含的BLOB。预期结果通过蒙特卡罗方法计算。有30个磁盘/主机，15个主机/机架和14个机架。
 
-![](resources\figure14.PNG)
+![](resources/figure14.PNG)
 
 Figure 14a shows the results for N disk failures. In the worst case there are some unavailable BLOBs after 4 disk failures, 50% unavailable BLOBs after 2250 disk failures, and 100% unavailable BLOBs after 4500 disk failures. In the best case there are no unavailable BLOBs until there are more than 1800 disk failures. In expectation, there will be some unavailable BLOBs after 450 disk failures, and 50% unavailable BLOBs after 3200 disk failures.
 > 图14a显示了N盘故障的结果。 在最坏的情况下，在4次磁盘故障后有一些不可用的BLOB，在2250次磁盘故障后50％不可用的BLOB，以及4500次磁盘故障后100％不可用的BLOB。 在最好的情况下，在超过1800个磁盘故障之前没有不可用的BLOB。 在预期中，450个磁盘发生故障后会有一些不可用的BLOB，而在3200个磁盘发生故障后会有50％不可用的BLOB。
@@ -503,7 +503,7 @@ f4 saves storage space by reducing the effective-replication-factor of BLOBs, bu
 Let replhay = 3.6 be the effective replication factor for Haystack, replf4 = 2.8 or 2.1 be the effective replication factor of f4, delf4 = .068 the fraction of BLOBs in f4 that are deleted, and logicalf4 > 65P B be the logical size of BLOBs stored in f4. Then the reduction in storage space from f4 is:
 > 令replhay = 3.6是Haystack的有效复制因子，replf4 = 2.8或2.1是f4的有效复制因子，delf4 = .068 f4中BLOB的分数被删除，而logicalf4> 65P B是BLOB的逻辑大小 存储在f4中。 然后从f4减少存储空间是：
 
-![](resources\formula1.PNG)
+![](resources/formula1.PNG)
 
 With a current corpus over 65 PB, f4 saved over 39 PB of storage at the 2.8 effective-replication-factor and will save over 87 PB of storage at 2.1. f4 currently saves over 53PB with the partial deployment of 2.1.
 > 当前的语料库超过65 PB，f4以2.8有效复制因子节省了超过39 PB的存储空间，并且在2.1时节省了超过87 PB的存储空间。 f4目前可以节省超过53PB，部分部署2.1。

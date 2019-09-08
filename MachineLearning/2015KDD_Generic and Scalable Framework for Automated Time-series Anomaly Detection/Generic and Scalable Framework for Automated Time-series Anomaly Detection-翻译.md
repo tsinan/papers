@@ -50,7 +50,7 @@ EGADS was built as a framework to be easily integrated into an existing monitori
 EGADS operates as a stand-alone platform that can be used as a library in larger systems. Therefore, designing an interface between EGADS and an internal Yahoo monitoring service (YMS) is critical. A key constraint of YMS is scale; the platform needs to evaluate millions of data points per second. As a result, many of the integration architecture decisions are focused on optimizing real-time processing. The integration with YMS is shown in Figure 1.
 > EGADS作为独立平台运行，可用作大型系统中的库。 因此，设计EGADS与内部Yahoo监控服务（YMS）之间的接口至关重要。 YMS的一个关键约束是规模; 平台需要每秒评估数百万个数据点。 因此，许多集成架构决策都专注于优化实时处理。 与YMS的集成如图1所示。
 
-![](resources\figure1.PNG)
+![](resources/figure1.PNG)
 
 Several support components are required to drive action based on detected anomalies. First of all, all anomaly detection models are generated in batch and applied in real time. The batch flow is comprised of three steps:
 > 需要几个支持组件来根据检测到的异常来驱动操作。 首先，所有异常检测模型都是批量生成并实时应用。 批处理流程包括三个步骤：
@@ -133,7 +133,7 @@ Our proposed Plug-in framework consists of two main components: the time-series 
 Given the predicted value ut and the actual observed value xt, the ADM computes some notion of deviation which we refer to as the deviation metric (DM). The simplest measure of deviation is the prediction error, P Et = xt - ut. If the error falls outside some fixed thresholds, an alert is issued. This simple method may work in some cases, but it will not be a good strategy for most because it does not capture the relative error. The relative error, REt is defined as a factor of ut:
 > 给定预测值ut和实际观测值xt，ADM计算一些偏差概念，我们将其称为偏差度量（DM）。 最简单的偏差测量是预测误差，P Et = xt  -  ut。 如果错误超出某些固定阈值，则会发出警报。 这种简单的方法在某些情况下可能会起作用，但对大多数情况来说它不是一个好策略，因为它不会捕获相对错误。 相对误差REt定义为ut的一个因子：
 
-![](resources\fomula1.PNG)
+![](resources/fomula1.PNG)
 
 By thresholding the relative error, one can detect anomalies while normalizing out the dependence on the magnitude of the expected value. The values of these thresholds, indeed, determine how sensitive the anomaly detection module is. Various thresholding techniques are described in Section 4. Despite its common usage and effectiveness, however, there is no reason to believe the relative error is always the optimal metric for anomaly detection on a given time-series. In fact, the choice of the optimal metric for a given time-series highly depends on the nature of the time-series as well as the TMM performance. For instance, if we are dealing with a very regular time-series for which we have an accurate model, using the prediction error for anomaly detection might be sufficient as it is expected to be Normally distributed. In other cases, the optimal metric might be something between the prediction error and the relative error. For this reason, EGADS tracks a set of deviation metrics by default and the person using the system can create her own error metrics. These error metrics, together with other features, such as the time series characteristics, are used in the alerting module (AM), described in Section 4, to learn consumer’s preferences and filter unimportant anomalies.
 > 通过对相对误差进行阈值处理，可以检测异常，同时归一化对期望值的大小的依赖性。实际上，这些阈值的值决定了异常检测模块的灵敏度。第4节描述了各种阈值技术。尽管它有共同的用途和有效性，但没有理由相信相对误差始终是给定时间序列上异常检测的最佳度量。实际上，给定时间序列的最佳度量的选择在很大程度上取决于时间序列的性质以及TMM性能。例如，如果我们正在处理一个非常规则的时间序列，我们有一个准确的模型，使用异常检测的预测误差可能就足够了，因为预期它是正态分布的。在其他情况下，最佳度量可能在预测误差和相对误差之间。因此，EGADS默认跟踪一组偏差度量标准，使用该系统的人员可以创建自己的错误度量标准。这些错误指标以及其他功能（如时间序列特征）在第4节中描述的警报模块（AM）中使用，以了解消费者的偏好并过滤不重要的异常。
@@ -183,7 +183,7 @@ The second approach is non-parametric and is useful for the cases when the devia
 Filtering performs the last stage post-processing on the anomalies which are then delivered to the consumer. While the candidate anomalies, which are the input to the filtering stage, are statistically significant, not all of them will be relevant for a particular use-case. For example some consumers are interested in spikes in the time-series, while others are interested in dips, yet others are interested in change points. EGADS provides a simple and intuitive interface which allows users to mark the regions of the time-series that are anomalous. This feedback is then used by EGADS together with time-series and model features to train a classifier that predicts if an anomaly ai is relevant to user uj . The time-series features tracked by EGADS are shown in Table 1 and are described in more detail in [29]. Section 6.4 explores the performance of a filtering module for a specific use-case. Like other components of EGADS, the filtering component is extensible in terms of models and features.
 > 过滤对异常进行最后阶段后处理，然后将异常传递给消费者。虽然作为过滤阶段输入的候选异常在统计上是显着的，但并非所有异常都与特定用例相关。例如，一些消费者对时间序列中的峰值感兴趣，而其他消费者对逢低感兴趣，而其他消费者则对变化点感兴趣。 EGADS提供简单直观的界面，允许用户标记异常时间序列的区域。然后，EGADS将该反馈与时间序列和模型特征一起用于训练分类器，该分类器预测异常ai是否与用户uj相关。 EGADS跟踪的时间序列特征如表1所示，并在[29]中有更详细的描述。第6.4节探讨了特定用例的过滤模块的性能。与EGADS的其他组件一样，过滤组件在模型和功能方面是可扩展的。
 
-![](resources\table1.PNG)
+![](resources/table1.PNG)
 
 | 时间序列特征   | 描述                                                         |
 | -------------- | ------------------------------------------------------------ |
@@ -200,7 +200,7 @@ Filtering performs the last stage post-processing on the anomalies which are the
 Figure 2 shows the feature profile of a sample time-series. Note that the metrics beginning with dc are obtained on the adjusted time-series (i.e. after removing trend and seasonality). In Section 6.2 we look at how these time-series characteristics impact the model performance.
 > 图2显示了采样时间序列的特征配置文件。 注意，以dc为开始的度量是在调整的时间序列上获得的（即在去除趋势和季节性之后）。 在6.2节中，我们将了解这些时间序列特征如何影响模型性能。
 
-![](resources\figure2.PNG)
+![](resources/figure2.PNG)
 
 5.  RELATED WORK
 
@@ -228,7 +228,7 @@ The dataset used for the experiments is comprised of a mixture (50/50) of synthe
 Time-series modeling (captured by the TMM component in EGADS) is a fundamental part of anomaly detection. It is often the case that the anomaly detection is as good as the underlying time-series model. Due to a large number of candidate models, model-selection becomes critical and depends upon time-series characteristics and available resources. In the experiments that follow, we demonstrate the impact of time-series features on the model performance and show the trade-off between accuracy, memory usage and training time. The models and the error metrics used in the experiments are described in Tables 2 and 3 respectively.More details about the models and the metrics can be found in [10] and [29].
 > 时间序列建模（由EGADS中的TMM组件捕获）是异常检测的基本部分。 通常情况下，异常检测与基础时间序列模型一样好。 由于大量候选模型，模型选择变得至关重要并且取决于时间序列特征和可用资源。 在接下来的实验中，我们展示了时间序列特征对模型性能的影响，并显示了准确性，内存使用和培训时间之间的交易。 实验中使用的模型和误差度量分别在表2和表3中描述。关于模型和度量的更多细节可以在[10]和[29]中找到。
 
-![](resources\table2.PNG)
+![](resources/table2.PNG)
 
 | 模型                                        | 描述                                                         |
 | ------------------------------------------- | ------------------------------------------------------------ |
@@ -240,7 +240,7 @@ Time-series modeling (captured by the TMM component in EGADS) is a fundamental p
 | (T)BATS Family                              | （三角函数）具有Box-Cox变换的指数平滑状态空间模型。          |
 | Spectral Kalman Filter（频谱卡尔曼滤波器）  | 一种内部算法，实现用于学习卡尔曼滤波器参数的快速多变量频谱学习方法。 |
 
-![](resources\table3.PNG)
+![](resources/table3.PNG)
 
 | 模型 | 描述                    |
 | ---- | ----------------------- |
@@ -260,21 +260,21 @@ Time-series modeling (captured by the TMM component in EGADS) is a fundamental p
 To demonstrate the impact of time-series features on model performance we compare the error metrics of different models when fitting time-series with different features (see Section 4.2). Figure 3 shows that time-series characteristics play an important role in model behavior. For example the Seasonal Naive Model, performs poorly on a dataset with no seasonality and a strong trend. EGADS keeps track of the historic time-series characteristics and model performance. Using this historical information, EGADS selects the best model (given the time-series features) judged by the error metrics described in Table 3. In practice, performing model selection based on the data features is much faster than performing cross-validation for every model.
 > 为了演示时间序列特征对模型性能的影响，我们比较了在拟合具有不同特征的时间序列时不同模型的误差度量（参见第4.2节）。 图3显示时间序列特征在模型行为中起着重要作用。 例如季节性朴素模型，在没有季节性和强烈趋势的数据集上表现不佳。 EGADS记录历史时间序列特征和模型性能。 使用此历史信息，EGADS选择由表3中描述的错误度量判断的最佳模型（给定时间序列特征）。实际上，基于数据特征执行模型选择比对每个模型执行交叉验证要快得多。
 
-![](resources\figure3.PNG)
+![](resources/figure3.PNG)
 
 6.2.2 Time-series Model Scalability
 
 As discussed in Section 2 it is often prohibitive to build models for every time-series and optimization techniques are required to support real-time performance over massive (e.g., millions of points every second) data-streams. A fundamental optimization performs a trade-off between model size, training time and accuracy. Such a trade-off is shown in Figures 4(a) and 4(b). From the figure, for example, it is clear that the Seasonal Naive model is quick to train but has a relatively large memory requirement and a high average error. At Yahoo, a target in terms of resources and training time is first set and then the models are picked accordingly. In other words, the objective is to minimize the errors in Table 3 subject to the resource and model building time constrains. Other optimization techniques including time-series sampling and model sharing are being investigated.
 > 如第2节中所讨论的，为每个时间序列构建模型通常是禁止的，并且需要优化技术来支持大规模（例如，每秒数百万个点）数据流的实时性能。 基本优化在模型大小，训练时间和准确性之间进行权衡。 这种权衡如图4（a）和4（b）所示。 例如，从图中可以看出，Seasonal Naive模型很快就可以训练，但是具有相对较大的内存需求和较高的平均误差。 在雅虎，首先设置资源和培训时间的目标，然后相应地挑选模型。 换句话说，目标是在资源和模型构建时间约束的情况下最小化表3中的错误。 正在研究其他优化技术，包括时间序列采样和模型共享。
 
-![](resources\figure4.PNG)
+![](resources/figure4.PNG)
 
 6.3 Anomaly Detection Experiments
 
 In this section we compare open source system against EGADS. The open source systems considered are shown in Table 4. The results on the data described in Section 6.1 are shown in Figure 5. The results are compared in terms of the standard F1-Score = 2 ⇥ precision⇥recall precision+recall . The results indicate that there is no best anomaly detection model for all use-cases. In particular different algorithms are best at detection different types of anomalies. For example Twitter [13] performs best on the time-series labeled TS-2 while ExtremeLowDensity model is best on TS-3. These datasets contain a mixture of anomaly types (e.g., outliers, change points), and one might argue that comparing an algorithm that is only meant for change-point detection is not fair. Recall, however, that the motivation for EGADS was that the user should be agnostic to the type of time-series and the type of anomalies that are in the data. The system must be able to gracefully and robustly deal with a wide variety of anomalies present in the data. For this reason, EGADS is built as a library that combines a set of anomaly detection models into a single framework. The anomalies from these models are forwarded to the filtering component for accurate anomaly detection.
 > 在本节中，我们将开源系统与EGADS进行比较。所考虑的开源系统如表4所示。第6.1节中描述的数据结果如图5所示。结果按照标准F1-分数=2⇥精度·回读精度+召回进行比较。结果表明，对于所有用例，没有最佳的异常检测模型。特别地，不同的算法最适合检测不同类型的异常。例如，Twitter [13]在标记为TS-2的时间序列上表现最佳，而ExtremeLowDensity模型在TS-3上表现最佳。这些数据集包含异常类型的混合（例如，异常值，变化点），并且可能认为比较仅用于变化点检测的算法是不公平的。但是，回想一下，EGADS的动机是用户应该对时间序列的类型和数据中的异常类型不可知。系统必须能够优雅而稳健地处理数据中存在的各种异常。出于这个原因，EGADS被构建为一个库，它将一组异常检测模型组合到一个框架中。来自这些模型的异常被转发到过滤组件以进行准确的异常检测。
 
-![](resources\table4.PNG)
+![](resources/table4.PNG)
 
 | 模型                                 | 描述                                                         |
 | ------------------------------------ | ------------------------------------------------------------ |
@@ -287,7 +287,7 @@ In this section we compare open source system against EGADS. The open source sys
 | ChangePt1 R CP                       | 一个R库，它实现了各种主流和专用变更点方法，用于在数据中查找单个和多个变更点。 方法I使用方差变化。 |
 | ChangePt2 & 3 R CP                   | 检测均值和方差的变化。                                       |
 
-![](resources\figure5.PNG)
+![](resources/figure5.PNG)
 
 6.4 Anomaly Filtering Experiments
 

@@ -27,12 +27,12 @@ However, most anomaly detection algorithms (e.g., Opprentice [2], EDAGS [4], DON
 KPIs are streaming data aggregated at pre-defined time intervals (e.g., 1 minute or 10 seconds), thus are essentially time series. Time series clustering, as a popular topic in data mining, has been studied for over 20 years [6]. Most published papers [7, 8] focus on clustering methods and similarity measures with an assumption of idealized time series data. These idealized time series are often low-dimensional (usually less than 1000 data points), and the curves are smooth without abnormal patterns, as shown in Fig. 1a. 
 > KPI是以预定义的时间间隔（例如，1分钟或10秒）聚合的流数据，因此基本上是时间序列。 时间序列聚类作为数据挖掘中的一个热门话题，已经研究了20多年[6]。 大多数已发表的论文[7,8]着重于聚类方法和相似性度量，并假设理想化的时间序列数据。 这些理想化的时间序列通常是低维的（通常少于1000个数据点），曲线平滑而没有异常模式，如图1a所示。
 
-![](resources\figure1.PNG)
+![](resources/figure1.PNG)
 
 However, KPI clustering faces two major new challenges that are not present in classic time series clustering. First, noises, anomalies, phase shifts and amplitude differences often change the shape of KPIs, as shown in Fig. 2. These shape variations (e.g., huge or small spikes) on time series curves often distort KPI similarities, making it difficult to use traditional methods to cluster KPIs accurately. Second, a KPI usually contains tens of thousands of data points because it spans from several days to weeks in order to fully capture its patterns (e.g. periodicity, seasonality). Unfortunately, there is little work in the literature on clustering high dimensional time series data with anomalies and noises.
 > 但是，KPI集群面临着经典时间序列聚类中不存在的两个主要新挑战。 首先，噪声，异常，相移和幅度差异通常会改变KPI的形状，如图2所示。时间序列曲线上的这些形状变化（例如，巨大或小的尖峰）经常扭曲KPI的相似性，使其难以使用 传统方法准确地聚类KPI。 其次，KPI通常包含数万个数据点，因为它跨越了几天到几周，以便完全捕获其模式（例如周期性，季节性）。 遗憾的是，文献中关于聚类具有异常和噪声的高维时间序列数据的工作很少。
 
-![](resources\figure2.PNG)
+![](resources/figure2.PNG)
 
 In this paper, we tackle above challenges by proposing a robust and rapid time series clustering algorithm, ROCKA, which can cluster large-scale real-world KPIs with high accuracy and fast speed. First, for meaningful comparison, KPIs are normalized to eliminate amplitude differences. Then, ROCKA extracts the underlying shape of each KPI, called a baseline, to further reduce the impact of noises and anomalies. ROCKA adopts shape-based distance (SBD) [9] as distance measure, which is robust to phase shift and achieves high computational efficiency when dealing with high-dimensional time series data. Then ROCKA uses an efficient density-based algorithm to create clusters based on shape similarities of baselines. Finally, a representative KPI is identified as a centroid in each cluster and new KPIs can be assigned by their distances to centroids.
 > 在本文中，我们通过提出一种强大而快速的时间序列聚类算法ROCKA来解决上述挑战，该算法可以高精度和快速地聚类大规模的实际KPI。 首先，为了进行有意义的比较，将KPI标准化以消除幅度差异。 然后，ROCKA提取每个KPI的基础形状，称为基线，以进一步减少噪声和异常的影响。 ROCKA采用基于形状的距离（SBD）[9]作为距离测量，对于相移具有鲁棒性，并且在处理高维时间序列数据时实现了高计算效率。 然后，ROCKA使用基于密度的有效算法，根据基线的形状相似性创建聚类。 最后，代表性KPI被识别为每个聚类中的质心，并且可以通过它们到质心的距离来分配新的KPI。
@@ -83,7 +83,7 @@ In this paper, we address these challenges by clustering KPIs based on similarit
 We propose a novel time series clustering algorithm, ROCKA, as shown in Fig. 3. Overall, ROCKA consists of four steps: preprocessing, baseline extraction, clustering and assignment. Preprocessing is conducted on the raw KPI data to remove amplitude differences and standardize data. In baseline extraction step, we reduce noises, remove the extreme values (which are likely anomalies), and extract underlying shapes, referred to as baselines, of KPIs. Clustering is then conducted on the baselines of sampled KPIs, with robustness against phase shifts and noises. Finally, we calculate the centroid of each cluster, then assign the unlabeled KPIs by their distances to these centroids.
 > 我们提出了一种新的时间序列聚类算法ROCKA，如图3所示。总体而言，ROCKA包括四个步骤：预处理，基线提取，聚类和分配。 对原始KPI数据进行预处理以消除幅度差异并标准化数据。 在基线提取步骤中，我们减少噪声，去除极值（可能是异常），并提取KPI的基础形状（称为基线）。 然后在采样KPI的基线上进行聚类，具有抗相移和噪声的鲁棒性。 最后，我们计算每个聚类的质心，然后根据它们到这些质心的距离分配未标记的KPI。
 
-![](resources\figure3.PNG)
+![](resources/figure3.PNG)
 
 In order to cluster a large number of KPIs, for the sake of efficiency, we create a clustering model using a subset of randomly sampled KPIs, and then assign the rest of KPIs to the resulting clusters. As discussed in [10], a small sample dataset is enough for clustering even if the number of KPIs is really large. e.g., for a dataset with more than 9000 time series, sample 2000 of them is enough for clustering.
 > 为了集中大量KPI，为了提高效率，我们使用随机抽样KPI的子集创建聚类模型，然后将其余KPI分配给生成的集群。 正如[10]中所讨论的，即使KPI的数量非常大，小样本数据集也足以进行聚类。 例如，对于具有超过9000个时间序列的数据集，其中的样本2000足以用于聚类。
@@ -110,13 +110,13 @@ Noises and anomalies, as demonstrated by the examples in Fig. 2a, can significan
 > 平滑极值：标准化后，每个KPI标准化为零均值和单位方差。 直觉上，异常偏离平均值最大。 一般来说，时间序列中的异常点比率小于5％[5]。 因此，我们只需删除与平均值偏差最大的前5％数据，然后使用线性插值来填充它们。 极端异常（通常是巨大的尖峰或倾斜）被移除并替换为其邻近的正常观察。 如果KPI具有很少的异常，则可能会错误地删除正常数据，但是它们仍然通过正常观察进行插值，而不会更改KPI的基本形状。
 
 2) Extract Baseline: Besides anomalies, noises also distort the shape-based similarity between KPIs. Thus we try to extract a rough baseline to represent each KPI. Generally, a KPI curve can be regarded as a smooth baseline (i.e., normal patterns that indicate its expected behavior) with many random noises. A simple but effective method is to apply moving average with a small sliding window on the KPI, separating its curve into two parts: baseline and residuals. Specifically, for a KPI, T, with a sliding window of length W, stride = 1, for each point xt, the corresponding point on the baseline, denoted as xt∗, is the mean of vector (xt - W+1, · · · , xt). Then the difference between xt and xt∗ is called a residual. The baseline B and residuals R can be computed as:
-![](resources\formula1.PNG)
+![](resources/formula1.PNG)
 > 提取基线：除了异常，噪声也会扭曲KPI之间基于形状的相似性。 因此，我们尝试提取粗略的基线来表示每个KPI。 通常，KPI曲线可以被视为具有许多随机噪声的平滑基线（即，指示其预期行为的正常模式）。 一种简单但有效的方法是在KPI上应用具有小滑动窗口的移动平均线，将其曲线分成两部分：基线和残差。 具体来说，对于KPI，T，滑动窗口的长度为W，stride = 1，对于每个点xt，基线上的对应点，表示为xt *，是向量的平均值（xt  -  W + 1，· ··，xt）。 然后xt和xt *之间的差异称为残差。 基线B和残差R可以计算如下：
 
 Fig. 4 shows baseline extraction for a real-world KPI example. The baseline extracted by our algorithm removes most of the anomalies and noises while preserving its underlying shape. The residuals contains random noises, and are not considered in clustering. After that, we apply standardization again to get a standardized baseline. Such a baseline is used as the input of our clustering algorithm.
 > 图4显示了真实世界KPI示例的基线提取。 我们算法提取的基线可以消除大部分异常和噪声，同时保留其基础形状。 残差包含随机噪声，在聚类中不予考虑。 之后，我们再次应用标准化以获得标准化基线。 这样的基线用作我们的聚类算法的输入。
 
-![](resources\figure4.PNG)
+![](resources/figure4.PNG)
 
 3.3 Density-based Clustering
 > 基于密度的聚类
@@ -133,15 +133,15 @@ Cross-correlation is a well-accepted similarity measure of time series in the si
 Since baselines are standardized time series without amplitude differences, the comparison between them is now meaningful. For two time series ~x = (x1, · · · , xm) and ~y = (y1, · · · , ym), cross-correlation slides ~y over ~x to compute the inner-product for each shift s of ~y, as defined by Eq. (2).
 > 由于基线是没有幅度差异的标准化时间序列，因此它们之间的比较现在是有意义的。 对于两个时间序列~x =（x1，···，xm）和~y =（y1，...，ym），cross-correlation在~x上滑动〜y来计算每个班次的内积 ~y，如公式所定义。（2）。
 
-![](resources\formula2.PNG)
+![](resources/formula2.PNG)
 For all possible shifts s ∈ [ -m + 1, m - 1], we can calculate the inner-product CCs(~x, ~y) as the similarity between time series ~x and ~y with a phase shift s. It is defined as Eq. (3).
 > 对于所有可能的移位s∈[ -m + 1，m - 1]，我们可以计算内积CC（~x，~y）作为时间序列~x和~y之间的相似性，具有相移s。 它被定义为Eq。（3）。
 
-![](resources\formula3.PNG)
+![](resources/formula3.PNG)
 The cross-correlation is the maximized value of CCs(~x, ~y), which means the similarity between ~x and ~y at the optimal phase shift s. Intuitively, at the optimal shift, the similar patterns in ~x and ~y are properly aligned such that the inner-product is the maximum (i.e., the peaks in ~x are aligned with similar peaks in ~y with the optimal shift). Thus, the cross-correlation measure can overcome the phase shift and represent shape similarity between two time series. In practice, a normalized version of cross-correlation (NCC) is often used to limit the values to be within [-1, 1], where 1 shows a perfect similarity and -1 indicates the two time series are completely opposite. NCC is defined as follows:
 > cross-correlation是CC（~x，~y）的最大值，这意味着在最佳相移s处~x和~y之间的相似性。 直观地，在最佳位移处，~x和~y中的相似图案被适当地对准，使得内积是最大的（即，~x中的峰与〜y中具有最佳偏移的相似峰对齐）。 因此，cross-correlation测量可以克服相移并且表示两个时间序列之间的形状相似性。 实际上，标准化版本的Cross-correlation（NCC）通常用于将值限制在[-1,1]内，其中1表示完美相似度，-1表示两个时间序列完全相反。 NCC定义如下：
-![](resources\formula4.PNG)
-![](resources\formula5.PNG)
+![](resources/formula4.PNG)
+![](resources/formula5.PNG)
 
 Then we can define the shape-based distance (SBD) according to NCC, as discussed in [9]. SBD ranges from 0 to 2, where 0 means two time series have exactly the same shape. A smaller SBD means higher shape similarity. 
 > 然后我们可以根据NCC定义基于形状的距离（SBD），如[9]中所讨论的。 SBD的范围从0到2，其中0表示两个时间序列具有完全相同的形状。 较小的SBD意味着更高的形状相似性。
@@ -149,7 +149,7 @@ Then we can define the shape-based distance (SBD) according to NCC, as discussed
 Since the SBD is a point-wise similarity measure, extreme anomalies might be mistaken for peaks or troughs, misleading the similarity calculation. Thus, the baseline extraction step (Section III-B) plays an important role in finding the shape similarity between two KPIs. As shown in Fig. 5, the SBD of the two baselines is 0.0208, while that of the raw KPIs is 0.2802, over 10 times bigger. In fact, these two KPIs are very similar in their underlying shapes, but anomalies and noises can cause inaccurate similarity measurement.
 > 由于SBD是逐点相似性度量，极端异常可能被误认为是峰值或波谷，误导了相似度计算。 因此，基线提取步骤（第III-B节）在找到两个KPI之间的形状相似性方面起着重要作用。 如图5所示，两个基线的SBD为0.0208，而原始KPI的SBD为0.2802，大于10倍。 实际上，这两个KPI的基本形状非常相似，但异常和噪声可能导致不准确的相似性测量。
 
-![](resources\figure5.PNG)
+![](resources/figure5.PNG)
 
 2) Density-based Clustering with Parameter Estimation: According to [8], clustering algorithms can be broadly classified into six groups. Here we briefly discuss three that are related to our work. Partitioning methods, like K-Means [16] and K-medoids [17], are the most widely used ones due to their simplicity and effectiveness. However, the number of clusters, k, as well as the initial partition of each cluster, need to be predetermined. Feature- and model-based methods [7] try to transform time series into several features or fit them to pre-defined models to extract more information about data. These algorithms often make strong assumptions (e.g., the time series can be modeled using Gaussian mixture [18], ARIMA [19], etc), which barely hold in complicated datasets. Density-based methods, like DBSCAN [20], finds dense regions separated by low-density areas to form clusters. A cluster is expanded if its neighbors are dense, i.e., others that are similar to its core will be absorbed into it. In this way, density-based methods can identify clusters in arbitrary shape and size. Moreover, these methods can work with most similarity measures. 
 > 基于密度的参数估计聚类：根据[8]，聚类算法可以大致分为六组。在这里，我们简要讨论三个与我们的工作相关的内容。分类方法，如K-Means [16]和K-medoids [17]，由于其简单性和有效性，是最广泛使用的方法。然而，需要预先确定簇的数量k以及每个簇的初始分区。基于特征和模型的方法[7]尝试将时间序列转换为若干特征或将它们拟合到预定义模型以提取有关数据的更多信息。这些算法经常做出强有力的假设（例如，时间序列可以使用高斯混合[18]，ARIMA [19]等建模），这几乎不能容纳复杂的数据集。基于密度的方法，如DBSCAN [20]，发现由低密度区域分隔的密集区域形成聚类。如果聚类的邻居是密集的，则聚类被扩展，即，与其核心相似的其他聚类将被吸收到其中。通过这种方式，基于密度的方法可以识别任意形状和大小的簇。而且，这些方法可以用于大多数相似性度量。
@@ -163,12 +163,12 @@ The main idea of DBSCAN is to find some cores in dense regions, and then expand 
 For minPts = k, let kdis be the SBD between an object and its k-Nearest-Neighbor (KNN). If the kdis value of each object is plotted in a descending order, as shown in Fig. 6, a flat portion of the curve indicates the density around a number of objects is consistent, while a steep part shows significant density changes. As suggested by [10, 20], kdis on a flat portion of the curve can be considered as candidate density radiuses, since it ensures a good number of cores to expand clusters.
 > 对于minPts = k，令kdis为对象与其k-Nearest-Neighbor（KNN）之间的SBD。 如果每个对象的kdis值以降序绘制，如图6所示，曲线的平坦部分表示围绕多个对象的密度是一致的，而陡峭的部分表示显着的密度变化。 如[10,20]所建议的，曲线的平坦部分上的kdis可以被认为是候选密度半径，因为它确保了大量的核来扩展簇。
 
-![](resources\figure6.PNG)
+![](resources/figure6.PNG)
 
 However, a candidate density radius should be small enough to ensure a core and its neighbors are similar to each other. A large candidate value actually corresponds to a sparse region where the objects are dissimilar with each other (Fig. 7a). An object with a large kdis is actually considered as an outlier, i.e., it is not similar to most other objects and should not be clustered into any cluster. In practice, a threshold max_radius sets the upper bound of the density radius.
 > 但是，候选密度半径应足够小，以确保核心及其邻居彼此相似。 大的候选值实际上对应于对象彼此不相似的稀疏区域（图7a）。 具有大kdis的对象实际上被认为是异常值，即，它与大多数其他对象不相似，并且不应该聚集到任何聚类中。 实际上，阈值max_radius设置密度半径的上限。
 
-![](resources\figure7.PNG)
+![](resources/figure7.PNG)
 
 Motivated by [10], we designed a heuristic algorithm, as shown in Algorithm 1, to find candidate density radiuses. Given a kdis ≤ max_radius, it first checks whether the curve’s slopes on the left and right sides of the point are smaller than a threshold (slope_thresh, e.g., 0.01) to avoid search in a steep area. Then the left and right slopes are compared to see if the difference is less than a small threshold (slope_diff_thresh, e.g., 10^-3 ). If so, this kdis is considered as a candidate radius. A divide and conquer strategy is used to find all candidate radiuses. In our implementation, we empirically set max_radius to 0.05, and the final density radius is the largest candidate. This setup works well on all our datasets. In practice, max_radius can be adjusted by operators to obtain clusters in different granularity. i.e., a large max_radius leads to a few coarse-grained clusters, while a small value results in many fine-grained clusters and a large fraction of outliers.
 > 受[10]的启发，我们设计了一种启发式算法，如算法1所示，以找到候选密度半径。 给定kdis≤max_radius，它首先检查该点左侧和右侧的曲线斜率是否小于阈值（slope_thresh，例如0.01），以避免在陡峭区域中搜索。 然后比较左和右斜率以查看差异是否小于小阈值（slope_diff_thresh，例如10 ^ -3）。 如果是，则将该kdis视为候选半径。 分而治之策略用于查找所有候选半径。 在我们的实现中，我们根据经验将max_radius设置为0.05，最终密度半径是最大的候选者。 此设置适用于我们的所有数据集。 实际上，运营商可以调整max_radius以获得不同粒度的集群。 即，较大的max_radius导致一些粗粒度的簇，而较小的值导致许多细粒度簇和大部分异常值。
@@ -176,14 +176,14 @@ Motivated by [10], we designed a heuristic algorithm, as shown in Algorithm 1, t
 With the estimated parameters, we use DBSCAN to do clustering. The complexity of DBSCAN is O(n log(n)), for an input dataset with n time series data.
 > 使用估计的参数，我们使用DBSCAN进行聚类。 对于具有n个时间序列数据的输入数据集，DBSCAN的复杂度为O（n log（n））。
 
-![](resources\formula6.PNG)
+![](resources/formula6.PNG)
 
 3.4 Assignment
 
 After creating a clustering model using sampled KPIs, now we calculate the centroid of each cluster and then assign the rest of KPIs to the clusters based on centroids. Generally, in each cluster, the object which has the smallest sum of squared similarity distance to all the others is regarded as the cluster centroid. The centroid in a cluster can be calculated using Eq. (6). Fig. 7b shows a centroid of a cluster. Since we use SBD as our distance measure, the centroid can be used as a representative KPI that captures the common underlying shape of KPIs in the cluster. Thus, for anomaly detection, as will be discussed in Section V, we can train anomaly detection models on centroids only. In practice, operators can gain intuitive understanding of KPIs in each cluster through its centroid.
 > 在使用采样的KPI创建聚类模型后，现在我们计算每个聚类的质心，然后根据质心将其余的KPI分配给聚类。 通常，在每个聚类中，具有与所有其他聚类的最小平方和相似距离的对象被视为聚类质心。 可以使用Eq（6）来计算聚类中的质心。 图7b示出了簇的质心。 由于我们使用SBD作为距离度量，因此质心可以用作代表性KPI，捕获聚类中KPI的共同基础形状。 因此，对于异常检测，如将在第V节中讨论的，我们可以仅在质心上训练异常检测模型。 在实践中，运营商可以通过其质心直观地了解每个集群中的KPI。
 
-![](resources\formula7.PNG)
+![](resources/formula7.PNG)
 
 Once we get the centroid of each cluster, the assignment step is straightforward. For each unlabeled KPI, preprocessing and baseline extraction are applied to get its baseline time series ~x. Then we calculate the SBD between ~x and each cluster centroid, assigning it into the cluster with the nearest centroid.
 > 一旦我们得到每个集群的质心，分配步骤就很简单了。 对于每个未标记的KPI，应用预处理和基线提取以获得其基线时间序列~x。 然后我们计算~x和每个聚类质心之间的SBD，将其分配到具有最近质心的聚类中。
@@ -221,8 +221,8 @@ We first evaluate ROCKA on three public datasets and compare our results with YA
 3) Results: Since the data on public datasets are smooth, for ROCKA, we set the sliding window size W = 1 in baseline extraction. The clustering results are mapped to the ground-truth to calculate the NMI score. The performance is shown in Fig. 8. ROCKA outperforms YADING on all the three datasets. Specifically, there are quite a few phase shifts and anomalies in dataset StartLightCurves. YADING is confused by these variations since it directly applies L1 distance on the raw data without necessary alignment. On the other hand, the techniques in ROCKA enhance its robustness against shifts and anomalies. In addition, as discussed in Section III-D, ROCKA is computationally efficient when dealing with high dimensional time series. Our experiments were conducted on a machine with Intel(R) Xeon(R) CPU E5-2630 v3 @ 2.40GHz and 64GB RAM. With the pre-computed distance matrix and density radius, it takes less than 1 second to do clustering. It uses less than 0.05 second to assign an unlabeled 1000- dimensional time series, only slightly higher than YADING.
 > 3）结果：由于公共数据集上的数据是平滑的，对于ROCKA，我们在基线提取中设置滑动窗口大小W = 1。聚类结果映射到基础事实以计算NMI得分。性能如图8所示.ROCKA在所有三个数据集上都优于YADING。具体而言，数据集StartLightCurves中存在相当多的相移和异常。 YADING对这些变化感到困惑，因为它直接在原始数据上应用L1距离而没有必要的对齐。另一方面，ROCKA中的技术增强了其对移位和异常的鲁棒性。此外，如第III-D部分所述，ROCKA在处理高维时间序列时具有计算效率。我们的实验是在配备Intel（R）Xeon（R）CPU E5-2630 v3 @ 2.40GHz和64GB RAM的机器上进行的。利用预先计算的距离矩阵和密度半径，进行聚类只需不到1秒。它使用不到0.05秒来分配未标记的1000维时间序列，仅略高于YADING。
 
-![](resources\table1.PNG)
-![](resources\figure8.PNG)
+![](resources/table1.PNG)
+![](resources/figure8.PNG)
 
 4.3 Results in Practice
 
@@ -232,7 +232,7 @@ Now, in a similar fashion, we evaluate the overall performance of ROCKA and YADI
 1) Datasets: As shown in Table II, DS1 is a TPS/QPS (transaction/query per second) dataset from different clusters of machines. DS2 contains machine-level metrics (e.g., Search Response Time, CPU utilization) collected from a large number of machines. All KPIs in these two datasets are collected at one-minute time interval for about one month.
 > 1）数据集：如表II所示，DS1是来自不同机器群的TPS / QPS（每秒事务/查询）数据集。 DS2包含从大量计算机收集的计算机级指标（例如，搜索响应时间，CPU利用率）。 这两个数据集中的所有KPI以一分钟的时间间隔收集约一个月。
 
-![](resources\table2.PNG)
+![](resources/table2.PNG)
 
 The KPIs in DS1 and DS2 are grouped into four and seven types respectively by the engineers of data providers. These types are regarded as the ground truth for clustering. However, according to these engineers, KPIs that belongs to the same type (e.g., CPU utilization) can be clustered into several clusters due to their differences in shapes, but KPIs in different types (e.g., CPU utilization and memory utilization) cannot belong to the same cluster. We will calculate our evaluation metrics based on this rule.
 > DS1和DS2中的KPI分别由数据提供者的工程师分为四种和七种类型。 这些类型被视为聚类的基本事实。 但是，根据这些工程师的说法，由于形状不同，属于同一类型的KPI（例如CPU利用率）可以聚集成多个集群，但不同类型的KPI（例如，CPU利用率和内存利用率）不能属于 同一个集群。 我们将根据此规则计算评估指标。
@@ -243,7 +243,7 @@ The KPIs in DS1 and DS2 are grouped into four and seven types respectively by th
 Since a cluster should only contain KPIs of one type, after clustering, we determine the KPI type for each cluster by majority vote rule. Then we calculate precision and recall according to the assigned KPI types. Fig. 9 illustrates the evaluation method. For example, most KPIs in Cluster 1 belongs to type A, then the entire cluster is labeled as type A. Then KPI x, which actually belongs to type B, is counted as a False Positive when calculating F-score on type A, and as a False Negative when calculating F-score on type B. Note that, as shown in Fig. 9, it is legitimate to group KPIs of type A into two clusters, because these KPIs vary in shapes.
 > 由于聚类应仅包含一种类型的KPI，因此在聚类之后，我们通过多数投票规则确定每个聚类的KPI类型。 然后我们根据分配的KPI类型计算精度和召回率。 图9示出了评估方法。 例如，聚类1中的大多数KPI属于类型A，然后整个聚类被标记为类型A.然后，当计算类型A的F分数时，实际属于类型B的KPI x被计为假阳性，并且 在计算类型B上的F分数时作为假阴性。注意，如图9所示，将类型A的KPI分组为两个聚类是合法的，因为这些KPI的形状不同。
 
-![](resources\figure9.PNG)
+![](resources/figure9.PNG)
 
 It is worth mentioning that, KPIs that are not similar to any cluster are marked as outliers by density-based algorithms (e.g. ROCKA and YADING’). Since it is hard for operators to identify outlier KPIs in the large-scale datasets, we simply ignore them while calculating the F-score (i.e., we calculate F-score only for KPIs that have been assigned to clusters). Instead, we use a metric, fraction of outliers, to show the percentage of KPIs considered as outliers by each algorithm. Generally, it is quite common to have some outliers in real-world KPI datasets, since restart or service changes on machines may change the shapes of some KPIs. However, algorithms that are sensitive to noises and anomalies may mistakenly mark a large number of KPIs as outliers despite underlying shape invariance. In contrast, a robust algorithm will have lower fraction of outliers.
 > 值得一提的是，基于密度的算法（例如ROCKA和YADING'）将与任何聚类不相似的KPI标记为异常值。 由于运营商很难在大规模数据集中识别异常值KPI，因此我们在计算F分数时忽略它们（即，我们仅计算已分配给集群的KPI的F分数）。 相反，我们使用指标（异常值的一部分）来显示每个算法被视为异常值的KPI的百分比。 通常，在实际KPI数据集中存在一些异常值是很常见的，因为计算机上的重新启动或服务更改可能会更改某些KPI的形状。 然而，对噪声和异常敏感的算法可能会错误地将大量KPI标记为异常值，尽管存在基本的形状不变性。 相比之下，鲁棒算法将具有较低比例的异常值。
@@ -251,7 +251,7 @@ It is worth mentioning that, KPIs that are not similar to any cluster are marked
 3) Results: The results are shown in Table III. Compared with the UCR datasets, the real-world KPIs are more challenging for clustering because they have complicated shape variations, e.g., phase shifts, anomalies. We can see that ROCKA achieves good accuracy on both datasets. For DS1, ROCKA accurately clusters all KPIs with a small number of outliers. DS1 contains KPIs about the same metric from different groups of machines. Generally, machines from the same group have direct or indirect associations with each other, and as such, their corresponding KPIs roughly follow the same distribution. ROCKA, equipped with techniques to reduce the impact of shape variations (e.g., noises, phase shifts, etc), successfully clusters the KPIs according to their underlying shapes. In comparison, although YADING’ also obtains good accuracy on DS1, it marks a much larger fraction of outliers due to its sensitivity to shape variations.
 > 3）结果：结果如表III所示。 与UCR数据集相比，现实世界的KPI对于聚类更具挑战性，因为它们具有复杂的形状变化，例如相移，异常。 我们可以看到ROCKA在两个数据集上都达到了很好的准确性。 对于DS1，ROCKA使用少量异常值精确地聚集所有KPI。 DS1包含来自不同计算机组的相同指标的KPI。 通常，来自同一组的机器彼此具有直接或间接关联，因此，它们相应的KPI大致遵循相同的分布。 ROCKA配备了减少形状变化（例如，噪声，相移等）影响的技术，根据其基本形状成功地聚类KPI。 相比之下，尽管YADING'在DS1上也获得了良好的精度，但由于其对形状变化的敏感性，它标记了更大比例的异常值。
 
-![](resources\table3.PNG)
+![](resources/table3.PNG)
 
 DS2 contains metrics from a large number of machines, in which the association between KPIs is much weaker than in DS1. However, ROCKA still obtains good accuracy and marks only a small fraction of outliers thanks to its robustness. Although YADING’ achieves high F-score on the clustered data, half of the KPIs are marked as outliers. In fact, it only clusters KPIs that are very similar (with an extremely small L1 distance among raw data) into small clusters. Others are mistakenly marked as outliers by YADING’ due to its sensitivity to shape variations.
 > DS2包含来自大量计算机的指标，其中KPI之间的关联比DS1弱得多。 然而，ROCKA仍然获得了良好的准确性，并且由于其坚固性而仅标记了一小部分异常值。 虽然YADING'在群集数据上实现了高F分，但是一半的KPI被标记为异常值。 实际上，它只将非常相似的KPI（原始数据中的L1距离极小）聚类成小簇。 由于其对形状变化的敏感性，其他人被YADING'错误地标记为异常值。
@@ -267,7 +267,7 @@ We mainly use three techniques to make ROCKA more robust and rapid: baseline ext
 1) Baseline extraction: Fig. 10a compares the F-score and fraction of outliers of ROCKA with and without the baseline extraction. Although the F-score does not drop, the fraction of outliers increases dramatically without baseline extraction. Because of excessive anomalies and noises, most KPIs in DS2 appear in different shapes with little similarity. Without baseline extraction, ROCKA can only accurately cluster a small number of KPIs that are less affected by noises and anomalies, but regard the majority as outliers.
 > 1）基线提取：图10a比较了具有和不具有基线提取的ROCKA的F值和异常值的分数。 尽管F值没有下降，但是在没有基线提取的情况下，异常值的比例会急剧增加。 由于过多的异常和噪声，DS2中的大多数KPI呈现出不同的形状，几乎没有相似性。 如果没有基线提取，ROCKA只能准确地聚集少量受噪声和异常影响较小的KPI，但将大部分视为异常值。
 
-![](resources\figure10.PNG)
+![](resources/figure10.PNG)
 
 2) Similarity measures: In this experiment, we replace SBD by other popular distance measures, L1 norm, Euclidean distance or DTW. The F-score and computation time using these four similarity measures are shown in Fig. 10b and Fig. 10c. We can see that ROCKA with SBD excels the other options by a large margin. Since the KPIs are high dimensional and have frequent phase shifts, the simple L1 and Euclidean cannot obtain accurate similarities.
 > 2）相似度量：在本实验中，我们用其他流行的距离测度，L1范数，欧几里德距离或DTW代替SBD。 使用这四种相似性测量的F分数和计算时间示于图10b和图10c中。 我们可以看到具有SBD的ROCKA在很大程度上优于其他选项。 由于KPI是高维的并且具有频繁的相移，因此简单的L1和欧几里德不能获得准确的相似性。
@@ -324,13 +324,13 @@ All these anomaly detection experiments are run on a server (NVIDIA GeForce GTX 
 Table IV shows training and testing time consumed by each experiment. We can see that it takes 1075 seconds to train a DONUT model for a KPI. The total model training time will become prohibitive when dealing with a large number of KPIs. With ROCKA, KPIs are clustered into 5 clusters (the total cluster time is only few seconds, which is negligible) and we only need to train 5 anomaly detection models, reducing 90% model training time. The advantage in time reduction becomes even more significant with larger KPI datasets, where a cluster may contain more KPIs.
 > 表IV显示了每个实验消耗的训练和测试时间。 我们可以看到，为KPI训练DONUT模型需要1075秒。 在处理大量KPI时，总模型培训时间将变得过高。 使用ROCKA，KPI聚集成5个集群（总集群时间仅为几秒，这可以忽略不计），我们只需要训练5个异常检测模型，减少90％的模型训练时间。 对于较大的KPI数据集，时间缩减的优势变得更加显着，其中群集可能包含更多KPI。
 
-![](resources\table4.PNG)
+![](resources/table4.PNG)
 
 Now we turn to F-score. Table V shows the average F-score of the three experiments for each KPI cluster. Fig. 11a gives the cumulative distribution function (CDF) of F-score on each KPI. We can see that, in E1, DONUT achieves high F-score on most of the KPIs with an average of 0.89. About 90% KPIs has a F-score over 0.8. In E2, the cluster-based approach also obtains decent results, with an average F-score of 0.76. This is because KPIs with a similar underlying shape tends to have implicit associations in practice (i.e., belong to the same cluster of machines, measure similar metrics, etc). In this way, KPIs in the same cluster also have similar normal patterns. As a result, they can share an anomaly detection model and threshold.
 > 现在我们转向F-score。 表V显示了每个KPI簇的三次实验的平均F值。 图11a给出了每个KPI上F分数的累积分布函数（CDF）。 我们可以看到，在E1中，DONUT在大多数KPI上获得了高F值，平均为0.89。 大约90％的KPI的F分数超过0.8。 在E2中，基于聚类的方法也获得了不错的结果，平均F值为0.76。 这是因为具有类似基础形状的KPI在实践中倾向于具有隐式关联（即，属于相同的机器群，测量类似的度量等）。 通过这种方式，同一群集中的KPI也具有相似的正常模式。 因此，他们可以共享异常检测模型和阈值。
 
-![](resources\table5.PNG)
-![](resources\figure11.PNG)
+![](resources/table5.PNG)
+![](resources/figure11.PNG)
 
 E2 is very useful when dealing with large-scale KPIs. First, this cluster-based approach is very efficient in model training. More importantly, we do not need ground-truth anomaly labels for each KPI to calculate the threshold. Instead, operators only need to label the centroid KPIs, and the threshold can be used on other KPIs in the same cluster. 
 > 在处理大规模KPI时，E2非常有用。 首先，这种基于群集的方法在模型训练中非常有效。 更重要的是，我们不需要每个KPI的地面实况异常标签来计算阈值。 相反，运营商只需标记质心KPI，阈值可用于同一集群中的其他KPI。
@@ -338,7 +338,7 @@ E2 is very useful when dealing with large-scale KPIs. First, this cluster-based 
 However, as shown in Fig. 11b, compared to E1, the F-score of most KPIs in E2 is reduced slightly, by less than 15%. The main reason is that KPIs vary by their anomaly severity levels, and a uniform threshold cannot be the optimal for every KPI. This can be explained by an example shown in Fig. 12. The KPI (say A) shown in Fig. 12b only has a few slight anomalies, but its cluster centroid suffers with more severe anomalies (Fig. 12a). With the centroid’s threshold (15.35), which is too high for A, anomalies on A are missed (Fig. 12b). With the same centroid’s anomaly detection model, we reestimate the threshold based on A’s ground-truth anomaly labels. With a new threshold (10.01), we reach a perfect F-score of 1.0.
 > 然而，如图11b所示，与E1相比，E2中大多数KPI的F分数略微降低，小于15％。 主要原因是KPI因异常严重程度而异，并且统一阈值不是每个KPI的最佳阈值。 这可以通过图12中所示的示例来解释。图12b中所示的KPI（比如说A）仅具有一些轻微的异常，但是其聚类质心遭受更严重的异常（图12a）。 对于A的质心阈值（15.35）太高，A上的异常被遗漏（图12b）。 使用相同的质心异常检测模型，我们根据A的地面真实异常标签重新估算阈值。 使用新的阈值（10.01），我们可以达到1.0的完美F值。
 
-![](resources\figure12.PNG)
+![](resources/figure12.PNG)
 
 Indeed, a few KPIs need KPI-specific thresholds. In E3, we fine-tune the threshold for each KPI based on its ground-truth labels. Then, as shown in Table V and Fig. 11a, the cluster-based approach achieves similar F-score as E1, but with significant reduction on model training time. Compared to E1, the F-score of most KPIs drop less than 5% in E3 (see Fig. 11b). This further demonstrates that the anomaly detection model can be shared in the same cluster regardless of different anomaly severity levels.
 > 实际上，一些KPI需要KPI特定的阈值。 在E3中，我们根据其地面实况标签微调每个KPI的阈值。 然后，如表V和图11a所示，基于群集的方法实现与E1类似的F分数，但是模型训练时间显着减少。 与E1相比，E3中大多数KPI的F分数下降不到5％（见图11b）。 这进一步证明了异常检测模型可以在同一群集中共享，而不管异常严重性级别如何。
@@ -346,7 +346,7 @@ Indeed, a few KPIs need KPI-specific thresholds. In E3, we fine-tune the thresho
 Interestingly, we find that the F-score on two particular KPIs actually arise in E2 compared to E1. Fig. 13a shows one KPI which has a few anomalies and some normal slight perturbations. The DONUT model (Fig. 13c) in E1 marks these perturbations as anomalies. In contrast, the centroid’s model (Fig. 13b) makes fewer mistakes. Generally, the anomaly detection model might be overfitting on some particular KPIs, making it sensitive to small fluctuations. In turn, the cluster centroid model learns less details of the particular KPI, which actually prevents overfitting and gets higher F-score.
 > 有趣的是，我们发现，与E1相比，E2中实际出现了两个特定KPI的F分数。 图13a示出了一个KPI，其具有一些异常和一些正常的轻微扰动。 E1中的DONUT模型（图13c）将这些扰动标记为异常。 相比之下，质心模型（图13b）的错误更少。 通常，异常检测模型可能过度拟合某些特定KPI，使其对小波动敏感。 反过来，群集质心模型学习特定KPI的较少细节，这实际上防止过度拟合并获得更高的F分数。
 
-![](resources\figure13.PNG)
+![](resources/figure13.PNG)
 
 6. CONCLUSION
 
