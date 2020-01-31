@@ -1,5 +1,5 @@
 ---
-typora-root-url: ./resources
+typora-root-url: .
 ---
 
 # Robust and Rapid Clustering of KPIs for Large-Scale Anomaly Detection

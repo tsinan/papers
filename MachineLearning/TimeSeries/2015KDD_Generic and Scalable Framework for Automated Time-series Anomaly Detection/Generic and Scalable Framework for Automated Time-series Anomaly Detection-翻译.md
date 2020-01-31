@@ -1,5 +1,5 @@
 ---
-typora-root-url: ./resources
+typora-root-url: .
 ---
 
 # Generic and Scalable Framework for Automated Time-series Anomaly Detection
@@ -141,7 +141,7 @@ By thresholding the relative error, one can detect anomalies while normalizing o
 3.1.2 Decomposition-based methods
 
 The second class of outlier detection methods in EGADS is based on the idea of time-series decomposition. In particular, in the time-series analysis literature, it is a common practice to decompose a time-series into three components: trend, seasonality and noise. By monitoring the noise component, one can capture the outliers. More precisely, if the absolute value of the noise component of point xt is greater than a certain threshold, one can announce xt as an outlier.
-> EGADS中的第二类异常检测方法基于时间序列分解的思想。 特别是在时间序列分析文献中，通常的做法是将时间序列分解为三个部分：趋势，季节性和噪声。 通过监测噪声分量，可以捕获异常值。 更确切地说，如果点xt的噪声分量的绝对值大于某个阈值，则可以将xt宣布为异常值。
+> EGADS中的第二类异常检测 将xt宣布为异常值。
 
 The decomposition of time-series can be done both in the time-domain via smoothing or in the frequency-domain via spectral decomposition. STL (Seasonal-Trend Decomposition based on Loess) [5] is a famous technique that uses Loess smoothing for decomposition. The frequency-domain methods can be further divided into parameteric and non-parametric methods. For the parametric methods, the basis used for spectral decomposition has a known parametric form (such as Fourier transform [2] or wavelet transform [22]) whereas, for non-parametric methods, the basis is datadriven [21].
 > 时间序列的分解既可以通过平滑在时域中进行，也可以通过频谱分解在频域中进行。 STL（基于Loess的季节趋势分解）[5]是一种使用Loess平滑分解的着名技术。 频域方法可以进一步分为参数和非参数方法。 对于参数方法，用于频谱分解的基础具有已知的参数形式（例如傅里叶变换[2]或小波变换[22]），而对于非参数方法，基础是数据驱动[21]。
@@ -419,6 +419,5 @@ Last but not least, EGADS by its very nature is extendable, providing an easy me
 
 
 [30] W. W.-S. Wei. Time series analysis. Addison-Wesley publ, 1994.
-
 
 [31] Y. Xie, J. Huang, and R. Willett. Change-point detection for high-dimensional time series with missing data. Selected Topics in Signal Processing, IEEE Journal of, 7(1):12–27, 2013.

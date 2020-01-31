@@ -1,5 +1,5 @@
 ---
-typora-root-url: ./resources
+typora-root-url: .
 ---
 
 # Opprentice: Towards Practical and Automatic Anomaly Detection Through Machine Learning
