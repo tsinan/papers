@@ -235,10 +235,328 @@ In addition to the accuracy metric, we compute the alert delay for each detected
 > 实验准备
 
 We set the window size W to be 120, which spans 2 hours in our datasets. The choice of W is restricted by two factors. On the one hand, too small a W will cause the model to be unable to capture the patterns, since the model is expected to recognize what the normal pattern is with the information only from the window (see § 5.1). On the other hand, too large a W will increase the risk of over-fitting, since we stick to fully-connected layers without weight sharing, thus the number of model parameters is proportional to W . We set the latent dimension K to be 3 for B and C, since the 3-d dimensional space can be easily visualized for analysis and luckily K = 3 works well empirically for for B and C. As for A, we found 3 is too small, so we empirically increase K to 8. These empirical choices of K are proven to be quite good on testing set, as will be shown in Fig 10. The hidden layers of qϕ(z|x) and pθ (x|z) are both chosen as two ReLU layers, each with 100 units, which makes the variational and generative network have equal size. We did not carry out exhaustive search on the structure of hidden networks. 
+> 我们将窗口大小W设置为120，在我们的数据集中跨越2个小时。 W的选择受到两个因素的限制。一方面，W太小将导致模型无法捕获模式，因为仅使用来自窗口的信息，模型才可以识别出正常模式（请参阅第5.1节）。另一方面，W太大会增加过度拟合的风险，因为我们坚持没有权重共享的全连接层，因此模型参数的数量与W成正比。我们将B和C的潜在维K设置为3，因为3维空间可以很容易地可视化以进行分析，幸运的是，对于B和C，K = 3在经验上很有效。至于A，我们发现3也是较小，因此我们将K经验性地增加到8。如图10所示，在测试集上证明了K的这些经验选择是很好的。qϕ（z | x）和pθ（x | z）的隐藏层都被选为两个ReLU层，每个层有100个单位，这使得variational网络和generative网络具有相同的大小。我们没有对隐藏网络的结构进行详尽的搜索。
 
+![](resources/figure10.jpg)
 
-Other hyper-parameters are also chosen empirically. We use 10옄4 as ϵ of the std layer. We use 0.01 as the injection ratio λ. We use 10 as the MCMC iteration count M, and use 1024 as the sampling number L of Monte Carlo integration. We use 256 as the batch size for training, and run for 250 epochs. We use Adam optimizer [15], with an initial learning rate of 10옄3 . We discount the learning rate by 0.75 after every 10 epochs. We apply L2 regularization to the hidden layers, with a coefficient of 10옄3 . We clip the gradients by norm, with a limit of 10.0.
-
+Other hyper-parameters are also chosen empirically. We use $10^{-4}$ as ϵ of the std layer. We use 0.01 as the injection ratio λ. We use 10 as the MCMC iteration count M, and use 1024 as the sampling number L of Monte Carlo integration. We use 256 as the batch size for training, and run for 250 epochs. We use Adam optimizer [15], with an initial learning rate of $10^{-3}$ . We discount the learning rate by 0.75 after every 10 epochs. We apply L2 regularization to the hidden layers, with a coefficient of $10^{-3}$ . We clip the gradients by norm, with a limit of 10.0.
+> 还可以凭经验选择其他超参数。 我们将 $10^{-4}$ 用作std层的ϵ。 我们使用0.01作为注入比λ。 我们使用10作为MCMC迭代计数M，并使用1024作为蒙特卡洛积分的采样数L。 我们使用256作为训练的批次大小，并运行250个纪元。 我们使用Adam优化器[15]，初始学习率为 $10^{-3}$ 。 每10个周期我们将学习率降低0.75。 我们对隐藏层应用L2正则化，系数为 $10^{-3}$ 。 我们按标准裁剪渐变，限制为10.0。
 
 In order to evaluate Donut with no labels, we ignore all the labels. For the case of occasional labels, we down-sample the anomaly labels of training and validation set to make it contain 10% of labeled anomalies. Note that missing points are not down-sampled. We keep throwing away anomaly segments randomly, with a probability that is proportional to the length of each segment, until the desired down-sampling rate is reached. We use this approach instead of randomly throwing away individual anomaly points, because KPIs are time sequences and each anomaly point could leak information about its neighboring points, resulting in over-estimated performance. Such downsampling are done 10 times, which enables us to do 10 independent, repeated experiments. Overall for each dataset, we have three versions: 0% labels, 10% labels, and 100% labels.
+> 为了评估没有标签的Donut，我们将忽略所有标签。 对于偶发标签，我们对训练和验证集的异常标签进行下采样，以使其包含10％的标记异常。 请注意，缺失点不会被下采样。 我们一直随机丢弃异常片段，其概率与每个片段的长度成正比，直到达到所需的下采样率。 我们使用这种方法，而不是随机丢弃单个异常点，因为KPI是时间序列，并且每个异常点都可能泄漏有关其相邻点的信息，从而导致性能被高估。 这样的下采样完成了10次，这使我们能够进行10个独立的重复实验。 对于每个数据集，总体而言，我们有三个版本：0％标签，10％标签和100％标签。
 
+
+4.4 Overall Performance
+> 整体表现
+
+We measure the AUC, the best F-Score, and the average alert delay corresponding to the best F-score in Fig 8 of Donut, and compared with three selected algorithms.
+> 我们测量了AUC，最佳F分数以及对应于Donut图8中最佳F分数的平均警报延迟，并与三种选定算法进行了比较。
+
+Opprentice [25] is an ensemble supervised framework using Random Forest classifier. On datasets similar to ours, Opprentice is reported to consistently and significantly outperform 14 anomaly detectors based on traditional statistical models (e.g., [6, 17, 18, 24, 26, 27, 31, 40, 41]), with in total 133 enumerated configurations of hyper-parameters for these detectors. Thus, in our evaluation of Donut, Opprentice not only serves as a state-of-art competitor algorithm from the non deep learning areas, but also serves as a proxy to compare with the empirical performance “upper bound" of these traditional anomaly detectors.
+> Opprentice [25]是使用随机森林分类器的集成监督框架。 在与我们相似的数据集上，据报告，Opprentice在传统统计模型（例如[6、17、18、24、26、27、31、40、41]）的基础上，在性能上始终显着优于14个异常检测器，这些检测器具有133项超参数配置。 因此，在我们对Donut的评估中，Opprentice不仅是非深度学习领域的最先进的竞争者算法，而且还是与这些传统异常检测器的经验性能“上限”进行比较的代理。
+
+VAE baseline. The VAE-based anomaly detection in [2] does not deal with time sequences, thus we set up the VAE baseline as follows. First, the VAE baseline has the same network structure as Donut, as shown in Fig 4. Second, among all the techniques in Fig 3, only those techniques in the Data Preparation step are used. Third, as suggested by [2], we exclude all windows containing either labeled anomalies or missing points from training data.
+> VAE基准。 [2]中基于VAE的异常检测不处理时间序列，因此我们按以下方法设置VAE基线。 首先，VAE基准具有与Donut相同的网络结构，如图4所示。其次，在图3中的所有技术中，仅使用“数据准备”步骤中的那些技术。 第三，正如[2]所建议的，我们从训练数据中排除所有包含标记异常或缺失点的窗口。
+
+Donut-Prior. Given that a generative model learns p(x) by nature, while in VAE p(x) is defined as Epθ (z) [pθ (x|z)], we also evaluate the prior counterpart of reconstruction probability, i.e., Epθ (z) [log pθ (x|z)]. We just need a baseline of the prior, so we compute the prior expectation by plain Monte Carlo integration, without advanced techniques to improve the result.
+> Donut-先验。 假设生成模型自然学习p（x），而在VAE中p（x）定义为Epθ（z）[pθ（x | z）]，我们还评估了重建概率的prior counterpart，即Epθ（ z）[logpθ（x | z）]。 我们只需要先验的基线，因此我们可以通过简单的蒙特卡洛积分来计算先验期望，而无需使用先进的技术来改善结果。
+
+The best F-score of Donut is quite satisfactory in totally unsu- pervised case, ranges from 0.75 to 0.9, better than the supervised Opprentice in all cases. In fact, when labels are incomplete, the best F-score of the Opprentice drops heavily in A and B, only re- maining acceptable in C. The number of anomalies are much larger in C than A and B, while having 10% of labels are likely to be just enough for training. Donut has an outstanding performance in the unsupervised scenario, and we see that feeding anomaly labels into Donut would in general make it work even better. There is, however, an unusual behavior of Donut, where the best F-score in C, as well as the AUC in B and C, are slightly worse with 100% labels than 10%. This is likely an optimization problem, where the unlabeled anomalies might cause training to be unstable, and ac- cidentally pull the model out of a sub-optimal equilibrium (§ 5.4). Such phenomenon seems to diminish when K increases from 3 (B and C) to 8 (A). Fortunately, it does not matter too much, so we would suggest to use labels in Donut whenever possible.
+> Donut的最佳F分数在完全不受监督的情况下是令人满意的，范围从0.75到0.9，在所有情况下都优于监督的Opprentice。实际上，当标签不完整时，Opprentice的最佳F分数会在A和B中大幅下降，而在C中仍保持可接受的水平。C中的异常数比A和B大得多，而C的异常数则为10％。标签可能足以进行培训。 Donut在无人监督的情况下具有出色的性能，我们看到将异常标签输入Donut通常会使它工作得更好。但是，Donut有一种不寻常的行为，在C中，最好的F分数以及B和C中的AUC在使用100％标签的情况下要比在10％情况下差一些。这可能是一个优化问题，未标记的异常可能会导致训练不稳定，并偶然使模型脱离次优均衡状态（第5.4节）。当K从3（B和C）增加到8（A）时，这种现象似乎消失了。幸运的是，这并不太重要，因此我们建议尽可能在Donut中使用标签。
+
+Donut outperforms the VAE baseline by a large margin in A and B, while it does not show such great advantage in C. In fact, the relative advantage of Donut is the largest in A, medium in B, and the smallest in C. This is caused by the following reasons. Naturally, VAE models normal x. As a result, the reconstruction probability actually expects x to be mostly normal (see § 5.1). However, since x are sliding windows of KPIs and we are required to produce one anomaly score for every point, it is sometimes inevitable to have abnormal points in x. This causes the VAE baseline to suffer a lot. In contrast, the techniques developed in this paper enhances the ability of Donut to produce reliable outputs even when anomalies present in earlier points in the same window. Meanwhile, abnormal points with similar abnormal magnitude would appear relatively “more abnormal” when the KPI is smoother. Given that A is the smoothest, B is medium, and C is the least smoothest, above observation in the relative advantage is not surprising.
+> 在A和B中，Doughnut的表现要比VAE基线好得多，而在C中却没有表现出如此大的优势。事实上，Doughnut的相对优势在A中最大，在B中中等，在C中最小。是由以下原因引起的。VAE对normal的x建模。结果，重建概率实际上期望x基本上是normal的（请参阅第5.1节）。但是，由于x是KPI的滑动窗口，并且要求我们为每个点生成一个异常分数，因此x中有时会不可避免地出现异常点。这导致VAE基线遭受很大损失。相反，本文开发的技术增强了Donut产生可靠输出的能力，即使在同一窗口的较早点出现异常时也是如此。同时，当KPI更平滑时，具有相似异常大小的异常点将显示为“更异常”。假设A是最平滑的，B是中等的，C是最不平滑的，因此在相对优势之上进行观察不足为奇。
+
+Finally, the best F-score of the Donut-Prior is much worse than the reconstruction probability, especially when the dimension of z is larger. However, it is worth mentioning that the posterior expectation in reconstruction probability only works under certain conditions (§ 5.2). Fortunately, this problem does not matter too much to Donut (see § 5.2). As such, the reconstruction probability can be used without too much concern.
+> 最后，Donut-Prior的最佳F分数比重建概率差得多，尤其是在z的维数较大时。 但是，值得一提的是，重建概率的后验仅在某些条件下有效（第5.2节）。 幸运的是，这个问题对Donut来说并没有太大关系（请参阅§5.2）。 这样，无需过多担心就可以使用重建概率。
+
+The average alert delays of Donut, Opprentice and VAE Base- line are acceptable over all datasets, whereas Donut-Prior is not. Meanwhile, the best F-score of Donut is much better than others. In conclusion, Donut could achieve the best performance without increasing the alert delay, thus Donut is practical for operators.
+> Donut，Opprentice和VAE Baseline的平均警报延迟在所有数据集中都是可接受的，而Donut-Prior则不是。 同时，Donut的最佳F得分远胜于其他。 总而言之，Donut可以在不增加警报延迟的情况下达到最佳性能，因此Donut对操作员而言是实用的。
+
+4.5 Effects of Donut Techniques
+> Donut技术的贡献
+
+We have proposed three techniques in this paper: (1) M-ELBO (Eqn (3)), (2) missing data injection, and (3) MCMC imputation. In Fig 10, we present the best F-score of Donut with four possible combinations of these techniques, plus the VAE baseline for compar- ison. These techniques are closely related to the KDE interpretation, which will be discussed further in § 5.2.
+> 我们在本文中提出了三种技术：（1）M-ELBO（等式（3）），（2）缺少的数据注入，以及（3）MCMC推理。 在图10中，我们给出了Donut的最佳F分数以及这些技术的四种可能组合，以及用于比较的VAE基线。 这些技术与KDE解释密切相关，将在5.2节中进一步讨论。
+
+M-ELBO alone contributes most of the improvement over the VAE baseline. It works by training Donut to get used to possible abnormal points in x, and to produce desired outputs in such cases. Although we expected M-ELBO to work, we did not expect it to work such well. In conclusion, it would not be a good practice to train a VAE for anomaly detection using only normal data, although it seems natural for a generative model (§ 5.2). To the best of our knowledge, M-ELBO and its importance have never been stated in previous work, thus is a major contribution of ours.
+> 仅M-ELBO就能在VAE基准上做出大部分改进。 它通过训练Donut来适应x中可能出现的异常点并在这种情况下产生所需的输出而起作用。 尽管我们期望M-ELBO能够工作，但是我们并不期望它能如此出色。 总之，尽管对于生成模型来说很自然（第5.2节），但仅使用正常数据来训练VAE以进行异常检测并不是一个好习惯。 据我们所知，M-ELBO及其重要性从未在以前的工作中提到过，因此是我们的重大贡献。
+
+Missing data injection is designed for amplifying the effect of M-ELBO, and can actually be seen as a data augmentation method. In fact, it would be better if we inject not only missing points, but also synthetically generated anomalies during training. However, it is difficult to generate anomalies similar enough to the real ones, which should be a large topic and is out of the scope of this paper. We thus only inject the missing points. The improvement of best F-score introduced by missing data injection is not very significant, and in the case of 0% labels on B and C, it is slightly worse than M-ELBO only. This is likely because the injection introduces extra randomness to training, such that it demands larger training epochs, compared to the case of M-ELBO only. We are not sure how many number of epochs to run when the injection is adopted, in order to get an objective comparison, thus we just use the same epochs in all cases, leaving the result as it is. We still recommend to use missing data injection, even with a cost of larger training epochs, as it is expected to work with a large chance.
+> 丢失数据注入是为增强M-ELBO的效果而设计的，实际上可以看作是一种数据增强方法。实际上，如果我们不仅在训练过程中注入缺失点，而且还注入合成产生的异常，那将更好。但是，很难产生足够接近真实异常的异常，这应该是一个大话题，不在本文讨论范围之内。因此，我们仅注入遗漏的点。由于缺少数据注入而导致的最佳F分数的提高不是很明显，并且在B和C上标记为0％的情况下，仅比M-ELBO差一点。这可能是因为与仅使用M-ELBO的情况相比，注入会给训练带来额外的随机性，因此需要更大的训练时间。我们不确定采用注入时要运行多少个时期，以便进行客观比较，因此我们在所有情况下都使用相同的时期，结果保持不变。我们仍然建议使用丢失的数据注入方法，即使付出较大的训练时机也是如此，因为这种方法很有可能会起作用。
+
+MCMC imputation is also designed to help Donut deal with abnormal points. Although Donut obtains significant improvement of best F-score with MCMC in only some cases, it never harms the performance. According to [32], this should be an expected result. We thus recommend to always adopt MCMC in detection.
+> MCMC推断还旨在帮助Donut处理异常点。 尽管Donut仅在某些情况下使用MCMC获得了最佳F评分的显着改善，但它从未损害性能。 根据[32]，这应该是预期的结果。 因此，我们建议在检测中始终采用MCMC。
+
+In conclusion, we recommend to use all the three techniques of Donut. The result of such configuration is also presented in Fig 9.
+> 总之，我们建议使用Donut的所有三种技术。 这种配置的结果也显示在图9中。
+
+![](resources/figure9.jpg)
+
+4.6 Impact of K
+> K值的影响
+
+The number of z dimensions, i.e., K, plays an important role. Too small a K would potentially cause under-fitting, or sub-optimal equilibrium (see § 5.4). On the other hand, too large a K would probably cause the reconstruction probability unable to find a good posterior (see § 5.1). It is difficult to choose a good K in totally unsupervised scenario, thus we leave it as a future work.
+> z维数，即K，起着重要的作用。 K太小可能会导致拟合不足或次优平衡（请参见第5.4节）。 另一方面，K太大可能会导致重建概率无法找到好的后验概率（请参阅第5.1节）。 在完全不受监督的情况下很难选择一个好的K，因此我们将其留作未来的工作。
+
+In Fig 10, we present the average best F-score with different K on testing set for unsupervised Donut. This does not help us choose the best K (since we cannot use testing test to pick K), but can show our empirical choice of 8, 3, 3 is quite good. The best F-score reaches maximum at 5 for A, 4 for B and 3 for C. In other words, the best F-score could be achieved with fairly small K . On the other hand, the best F-score does not drop too heavily for K up to 21. This gives us a large room to empirically choose K. Finally, we notice that smoother KPIs seem to demand larger K. Such phenomenon is not fully studied in this paper, and we leave it as a future work. Based on the observations in Fig 10, for KPIs similar to A, B or C, we suggest an empirical choice of K within the range from 5 to 10.
+> 在图10中，我们给出了无监督Donut测试集上具有不同K的平均最佳F分数。 这并不能帮助我们选择最佳K（因为我们不能使用测试来选择K），但是可以证明我们的经验选择8、3、3很好。 最佳F分数最大达到A的5分，B的4分和C的3分。换句话说，最佳的F分数可以用相当小的K来实现。 另一方面，最佳F分数对于K取值上限到21的下降不会太大。这为我们提供了较大的经验选择K的空间。最后，我们注意到较平滑的KPI似乎需要更大的K。这种现象在本文中并不完全进行了研究，我们将其留作将来的工作。 基于图10中的观察结果，对于类似于A，B或C的KPI，我们建议根据经验选择K，范围为5到10。
+
+5 ANALYSIS
+> 分析
+
+5.1 KDE Interpretation
+> KDE解释
+
+Although the reconstruction probability Eqφ (z |x) [log pθ (x|z)] has been adopted in [2, 36], how it actually works has not yet been madeclear. Some may see it a savariant of Eq (z|x)[pθ(x|z)], but Eqφ (z |x) [pθ (x|z)] = $\int$ pθ (x|z)qφ (z|x)dz, which is definitely not a well-defined probability*. Thus neither of [2, 36] can be explained by the probabilistic framework. We hereby propose the KDE (kernel density estimation) interpretation for the reconstruction probability, and for the entire Donut algorithm.
+> 尽管在[2，36]中采用了重建概率Eqφ（z | x）[logpθ（x | z）]，但尚不清楚它的实际工作方式。 有人可能会看到它是Eq（z | x）[pθ（x | z）]的变数，但Eqφ（z | x）[pθ（x | z）] = $\int$ pθ（x | z）qφ（z | x） dz，绝对不是定义明确的概率*。 因此，[2，36]都不能用概率框架来解释。 我们在此提出针对重建概率以及整个Donut算法的KDE（内核密度估计）解释。
+
+*In general it should give no useful information by computing the expectation of log pθ (x |z) upon the posterior qφ (z |x), using a potentially abnormal x.
+> 通常，使用潜在的异常x，通过计算基于后验qφ(z | x)的log pθ(x | z)的期望，不应提供有用的信息。
+
+The posterior qφ (z|x) for normal x exhibits time gradient, as Fig 11a shows. The windows of x at contiguous time (contiguous x for short hereafter) are mapped to nearby qφ (z|x), mostly with small variance σz (see Fig 12). The qφ (z|x) are thus organized in smooth transition, causing z samples to exhibit color gradient in the figure. We name this structure “time gradient”. The KPIs in this paper are smooth in general, so contiguous x are highly similar. The root cause of time gradient is the transition of qφ (z|x) in the shape of x (rather than the one in time), because Donut consumes only the shape of x and no time information. Time gradient benefits the generalization of Donut on unseen data: if we have a posterior qφ (z|x) somewhere between two training posteriors, it would be well-defined, avoiding absurd detection output.
+> 如图11 a所示，normal x的后验qφ（z | x）呈现时间梯度。 x的连续时间窗口（以下简称连续x）映射到附近的qφ（z | x），大多数情况下方差σz小（请参见图12）。 因此，qφ（z | x）平滑过渡，使z个样本在图中呈现颜色渐变。 我们将此结构称为“时间梯度”。 本文中的KPI总体上是平滑的，因此连续的x非常相似。 时间梯度的根本原因是qφ（z | x）呈x形状（而不是时间上的一个）的过渡，因为Donut仅消耗x的形状而没有时间信息。 时间梯度有利于在看不见的数据上推广Donut：如果我们在两个训练后验者之间的某个地方有一个后验qφ（z | x），则它将得到明确定义，避免了荒谬的检测输出。
+
+![](resources/figure11.jpg)
+
+![](resources/figure12.jpg)
+
+For a partially abnormal x*, the dimension reduction would allow Donut to recognize its normal pattern x ̃ , and cause qφ (z|x) to be approximately qφ (z|x ̃ ). This effect is caused by the following reasons. Donut is trained to reconstruct normal points in training samples with best efforts, while the dimension reduction causes Donut to be only able to capture a small amount of information from x. As a result, only the overall shape is encoded in qφ (z|x). The abnormal information is likely to be dropped in this procedure. However, if a x is too abnormal, Donut might fail to recognize any normal x ̃ , such that qφ (z|x) would become ill-defined.
+> 对于部分异常的x*，减小尺寸将使Donut能够识别其正常模式x，并使qφ（z | x）近似为qφ（z | x ̃）。 此效果是由以下原因引起的。 训练了Donut以最大的努力重建训练样本中的正常点，而维数减少导致Donut仅能够从x捕获少量信息。 结果，只有整体形状被编码为qφ（z | x）。 在此过程中可能会丢弃异常信息。 但是，如果x太异常，则Donut可能无法识别任何正常的x ̃，从而使qφ（z | x）变得不确定。
+
+*We call a x partially abnormal if only a small portion of points within x are abnormal, such that we can easily tell what normal pattern x should follow.
+> 如果x内只有一小部分点是异常的，我们称x为部分异常，这样我们就可以轻松判断x应该遵循什么正常模式。
+
+The fact that qφ (z|x) for a partially abnormal x would be similar to qφ (z|x ̃ ) brings special meanings to the reconstruction probability in Donut. Since M-ELBO is maximized with regard to normal pat- terns during training, log pθ (x|z) for z ∼ qφ (z|x ̃ ) should produce high scores for x similar to x ̃ , and vise versa. That is to say, each log pθ (x|z) can be used as a density estimator, indicating how well x follows the normal pattern x ̃. The posterior expectation then sums up the scores from all log pθ (x|z), with the weight qφ (z|x) for each z. This procedure is very similar to weighted kernel density estimation [11, 14]. We thus carry out the KDE interpretation: the reconstruction probability Eqφ (z |x) [log pθ (x|z)] in Donut can be seen as weighted kernel density estimation, with qφ (z|x) as weights and logpθ (x|z) as kernels* .
+
+> 对于部分异常x的qφ（z | x）类似于qφ（z | x ̃）的事实为Donut中的重建概率带来了特殊的含义。 由于在训练过程中M-ELBO相对于正常模式是最大化的，因此z〜qφ（z | x ̃）的logpθ（x | z）应该为x产生高分，类似于x high，反之亦然。 也就是说，每个logpθ（x | z）都可以用作密度估计值，表示x遵循正常模式x ̃的程度。 然后，后验期望将所有logpθ（x | z）的得分相加，并对每个z赋权重qφ（z | x）。 该过程与加权核密度估计[11，14]非常相似。 因此，我们进行了KDE解释：可以将Donut中的重建概率Eqφ（z | x）[logpθ（x | z）]视为加权核密度估计，其中qφ（z | x）为权重，logpθ（x | z）作为内核*。
+
+*The weights qφ (z|x) are implicitly applied by sampling in Monte Carlo integration.
+> 权重qφ（z | x）通过蒙特卡洛积分中的采样隐式应用。
+
+Fig 12 is an illustration of the KDE interpretation. We also visu- alize the 3-d latent spaces of all datasets in Fig 13. From the KDE interpretation, we suspect the prior expectation would not work well, whatever technique is adopted to improve the result: sampling on the prior should obtain kernels for all patterns of x, potentially confusing the density estimation for a particular x.
+> 图12是KDE解释的示意图。 我们还可视化了图13中所有数据集的3-d潜在空间。从KDE解释中，我们怀疑采用任何技术改善结果的先验期望都不能很好地发挥作用：对先验采样应该获得用于 x的所有模式，可能会混淆特定x的密度估计。
+
+![](resources/figure13.jpg)
+
+5.2 Find Good Posteriors for Abnormal x
+> 为异常的X寻找好的后验
+
+Donut can recognize the normal pattern of a partially abnormal x, and find a good posterior for estimating how well x follows the normal pattern. We now analyze how the techniques in Donut can enhance such ability of finding good posteriors.
+> Donut可以识别出部分异常x的正常模式，并找到一个很好的后验估计x遵循正常模式的程度。 现在我们分析Donut中的技术如何增强发现后验的能力。
+
+Donut is forced to reconstruct normal points within abnormal windows correctly during training, by M-ELBO. It is thus explic- itly trained to find good posteriors. This is the main reason why M-ELBO plays a vital role in Fig 9. Missing data injection ampli- fies the effect of M-ELBO, with synthetically generated missing points. On the other hand, MCMC imputation does not change the training process. Instead, it improves the detection, by iteratively approaching better posteriors, as illustrated in Fig 14.
+> 在M-ELBO训练期间，Donut被迫正确地重建异常窗口内的normal点。 因此，对它进行了专门的训练以找到优秀的后验。 这是M-ELBO在图9中起至关重要的作用的主要原因。缺少数据注入会通过综合生成的缺失点放大M-ELBO的效果。 另一方面，MCMC推断不会改变训练过程。 相反，它通过迭代接近更好的后验来改善检测，如图14所示。
+
+![](resources/figure14.jpg)
+
+Despite these techniques, Donut may still fail to find a good posterior, if there are too many anomalies in x. In our scenario, the KPIs are time sequences, with one point per minute. For long- lasting anomalies, having the correct detection scores and raise alerts at first few minutes are sufficient in our context5. The op- erators can take action once any score reaches the threshold, and simply ignore the following inaccurate scores. Nevertheless, the KDE interpretation can help us know the limitations of re- construction probability, in order to use it properly.
+> 尽管有这些技术，但如果x中存在太多异常，Donut仍然可能找不到良好的后验。 在我们的方案中，KPI是时间序列，每分钟1点。 对于长期异常，在我们的情况下，具有正确的检测分数并在开始的几分钟内发出警报就足够了。 一旦任何分数达到阈值，操作员就可以采取措施，而忽略以下不正确的分数。 但是，KDE解释可以帮助我们了解重建概率的局限性，以便正确使用它。
+
+5.3 Causes of Time Gradient
+> 时间梯度的原因
+
+In this section we discuss the causes of the time gradient effect. To simplify the discussion, let us assume training x are all normal, thus M-ELBO is now equivalent to the original ELBO. M-ELBO can then be decomposed into three terms as in Eqn (4) (we leave out some subscripts for shorter notation).
+
+> 在本节中，我们讨论时间梯度效应的原因。 为了简化讨论，让我们假设训练集x都是正常的，因此M-ELBO现在等同于原始的ELBO。 然后，可以将M-ELBO分解为等式（4）中的三个术语（我们省略了一些下标来表示较短的符号）。
+
+$\begin{equation}\begin{aligned}                                   \varsigma(x) &= \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)+\log p_\theta(z)-\log q_\phi(z|x)]\\       &=\mathbb{E}[\log p_\theta(x|z)] + \mathbb{E}[\log p_\theta(z)] + \mathbb{H}[z|x]  \end{aligned} (4) \end{equation}$
+
+The 1st term requires z samples from qφ (z|x) to have a high likeli- hood of reconstructing x. As a result, qφ (z|x) for x with dissimilar shapes are separated. The 2nd term causes qφ (z|x) to concentrate on N (0, I). The 3rd term, the entropy of qφ (z|x), causes qφ (z|x) to expand wherever possible. Recall the 2nd term sets a restricted area for qφ (z|x) to expand (see Fig 11c for the combination effect of the 2nd and 3rd term). Taking the 1st term into account, this expansion would also stop if qφ (z|x) for two dissimilar x reach each other. In order for every qφ (z|x) to have a maximal territory when training converges (i.e., these three terms reach an equilibrium), similar x would have to get close to each other, allowing qφ (z|x) to grow larger with overlapping boundaries. Since contiguous x are similar in seasonal KPIs (and vise versa), the time gradient would be a natural consequence, if such equilibrium could be achieved.
+> 第一项要求qφ（z | x）中的z个样本具有重构x的高可能性。 结果，分离了形状不同的x的qφ（z | x）。 第二项使qφ（z | x）集中于N（0，I）。 第三项，即qφ（z | x）的熵，使qφ（z | x）尽可能扩大。 回想一下，第二项为qφ（z | x）设置了扩展的限制区域（关于第二项和第三项的组合效果，请参见图11c）。 考虑到第一项，如果两个不同x的qφ（z | x）彼此达到，则该扩展也将停止。 为了使每个qφ（z | x）在训练收敛时具有最大的范围（即，这三个项达到平衡），相似的x必须彼此靠近，从而使qφ（z | x）变大 边界重叠。 由于连续的x在季节性KPI中相似（反之亦然），因此，如果可以实现这种平衡，则时间梯度将是自然的结果。
+
+Next we discuss how the equilibrium could be achieved. The SGVB algorithm keeps pushing qφ (z|x) for dissimilar x away during training, as illustrated in Fig 15. The more dissimilar two qφ (z|x) are, the further they are pushed away. Since we initialize the variational network randomly, qφ (z|x) are mixed everywhere when training just begins, as Fig 11b shows. At this time, every qφ (z|x) are pushed away by all other qφ (z|x). Since x are sliding windows of KPIs, any pair of x far away in time will be generally more dissimilar, thus get pushed away further from each other. This gives qφ (z|x) an initial layout. As training goes on, the time gradient is fine-tuned and gradually established, as Fig 16a shows. The training dynamics also suggest that the learning rate annealing technique is very important, since it can gradually stabilize the layout.
+> 接下来，我们讨论如何实现平衡。 如图15所示，SGVB算法会在训练过程中不断将xφ（z | x）推开，如图15所示。两个不同的qφ（z | x）越多，推开距离就越远。 由于我们随机地初始化了变分网络，因此如图11b所示，当训练刚开始时，qφ（z | x）随处可见。 此时，每个qφ（z | x）被所有其他qφ（z | x）推开。 由于x是KPI的滑动窗口，因此时间上相隔甚远的x对通常会更加相似，因此彼此之间的距离会越来越远。 这为qφ（z | x）提供了初始布局。 随着训练的进行，时间梯度将被微调并逐渐建立，如图16a所示。 训练动力学还表明，学习速率退火技术非常重要，因为它可以逐渐稳定布局。
+
+![](resources/figure15.jpg)
+
+![](resources/figure16.jpg)
+
+Surprisingly, we cannot find any term in M-ELBO that directly pulls qφ (z|x) for similar x together. The time gradient is likely to be caused mainly by expansion (H [z|x]), squeezing (E [log pθ (z)]), pushing (E [log pθ (x|z)]), and the training dynamics (random ini- tialization and SGVB). This could sometimes cause trouble, and result in sub-optimal layouts, as we shall see in § 5.4.
+> 令人惊讶的是，我们在M-ELBO中找不到任何将相似x的qφ（z | x）直接拉在一起的项。 时间梯度可能主要由膨胀（H [z | x]），挤压（E [logpθ（z）]），推动（E [logpθ（x | z）]）和训练动力学引起。 （随机初始化和SGVB）。 正如我们将在5.4节中看到的那样，这有时可能会引起麻烦，并导致布局欠佳。
+
+5.4 Sub-Optimal Equilibrium
+> 次优均衡
+
+qφ(z|x) may sometimes converge to a sub-optimal equilibrium. Fig 16b demonstrates such a problem, where the purple points accidentally get through the green points after the first 100 steps. The purple points push the green points away towards both sides, causing the green points to be totally cut off at around 5000 steps. As training goes on, the green points will be pushed even further, such that the model is locked to this sub-optimal equilibrium and never escapes. Fig 17 plots the training and validation loss of Fig 16b. Clearly, the model begins to over-fit soon after the green points are separated into halves. Such bad layout of z breaks the time gradient, where a testing x following green patterns might accidentally be mapped to somewhere between the green two halves and get recognized as purple. This would certainly downgrade the detection performance, according to the KDE interpretation.
+> qφ（z | x）有时可能收敛于次优平衡。 图16b演示了这样一个问题，在最初的100个步骤之后，紫色点偶然穿过绿色点。 紫色点将绿色点推向两侧，导致绿色点以大约5000步被完全切断。 随着训练的进行，绿点将被进一步推动，以使模型被锁定在该次优均衡状态，并且永不逃脱。 图17绘制了图16b的训练和验证损失。 显然，在将绿点分成两半后，模型很快就开始过拟合。 z的这种不良布局破坏了时间梯度，在这种情况下，遵循绿色模式的测试x可能会意外地映射到绿色两半之间的某处并被识别为紫色。 根据KDE的解释，这肯定会降低检测性能。
+
+![](resources/figure17.jpg)
+
+When there are unlabeled anomalies, the training would become unstable so that the model might be accidentally brought out of a sub-optimal equilibrium and achieve a better equilibrium after- wards. With the help of early-stopping during training, the best encountered equilibrium is chosen eventually. This explains why sometimes having complete labels would not benefit the perfor- mance. This effect is likely to be less obvious with larger K, since having more dimensions gives qφ (z|x) extra freedom to grow, re- ducing the chance of bad layouts. When sub-optimal equilibrium is not a vital problem, the convergence of training then becomes more important, while having more labels definitely helps stabilize the training. In conclusion, using anomaly labels in Donut is likely to benefit the performance, as long as K is adequately large.
+> 当存在未标记的异常时，训练将变得不稳定，因此该模型可能会意外地脱离次优平衡状态，并在之后达到更好的平衡状态。 在训练过程中尽早停止，最终选择了最佳的平衡。 这就解释了为什么有时拥有完整的标签不会对性能有所帮助。 对于较大的K，此效果可能不太明显，因为具有较大的尺寸会给qφ（z | x）额外的自由生长空间，从而减少不良布局的可能性。 当次优均衡不是至关重要的问题时，训练的收敛性就变得更加重要，而拥有更多标签肯定有助于稳定训练。 总之，只要K足够大，在Donut中使用异常标签很可能会提高性能。
+
+6 DISCUSSION
+> 讨论
+
+6.1 Broader Implications
+> 更广泛的含义
+
+Reconstruction. The dimension reduction in Donut throws away information of abnormal points. This implies that z for abnormal x might be indistinguishable from normal ones, thus cannot be used directly to detect anomalies. As a result, the reconstruction is thus an essential step in Donut. We believe this conclusion is also true in other algorithms involving dimension reduction. For example, the performance of PCA-based anomaly detection [19, 20, 33] is sensitive to the number of principle components. We suspect that using the reconstructed samples (as done in Donut) from these components could remove this sensitivity.
+> 重建。 Donut的维度减小会丢弃异常点的信息。这意味着异常x的z可能与正常x不可区分，因此不能直接用于检测异常。因此，重建是Donut中必不可少的步骤。我们相信这个结论在涉及降维的其他算法中也是正确的。例如，基于PCA的异常检测[19、20、33]的性能对主成分的数量很敏感。我们怀疑使用这些组件中的重建样本（在Donut中完成）会消除这种敏感性。
+
+KDE interpretation is the heart of Donut. We suspect this in- terpretation can also benefit the design of other deep generative models in anomaly detection. Meanwhile, the techniques of this pa- per (i.e., M-ELBO, missing data injection and MCMC) are designed to enhance the ability of finding good posteriors according to ab- normal x, needed by the density estimation step. These techniques are also readily applicable to other deep generative models.
+> KDE解释是Donut的核心。我们怀疑这种解释也可能有益于异常检测中其他深度生成模型的设计。同时，设计该文件的技术（即M-ELBO，丢失数据注入和MCMC）以增强根据密度估计步骤所需的异常x找到良好后验的能力。这些技术也很容易适用于其他深度生成模型。
+
+The time gradient effect may take place in more general types of seasonal or periodical sequences, rather than just the seasonal KPIs. Similar x are mapped to neighborhood qφ(z|x), such that Donut or its variants might potentially be useful in tasks dealing with similarities of sequences, in addition to anomaly detection, e.g., retrieving similar curves from a large database.
+> 时间梯度效应可能发生在更普遍的季节性或周期性序列类型中，而不仅仅是季节性KPI。相似的x映射到邻域qφ（z | x），因此除了异常检测（例如从大型数据库中检索相似的曲线）之外，Donut或其变体在处理序列相似性的任务中可能很有用。
+
+6.2 Future Work
+> 未来工作
+
+As mentioned in § 4.6, we leave the task of choosing K as future work. The topology of z might be a key for solving this problem, as we have seen how sub-optimal equilibriums might affect the per- formance (see § 5.4). Also, we suspect the sub-optimal equilibriums might be less likely to take place with large K, although we may still need more experiments and analysis to prove this.
+> 如第4.6节所述，我们将选择K作为未来工作的任务。 z的拓扑可能是解决此问题的关键，因为我们已经看到次优均衡可能如何影响性能（请参见第5.4节）。 此外，尽管我们可能仍需要更多的实验和分析来证明这一点，但我们怀疑在大K条件下不太可能发生次优平衡。
+
+We did not discuss how to choose the right threshold for detec- tion. This is also a quite difficult problem, especially in the unsu- pervised scenario. Some work (e.g., [21]) have been proposed w.r.t. choosing a proper threshold, which might be applicable to Donut.
+> 我们没有讨论如何选择正确的检测阈值。 这也是一个相当困难的问题，尤其是在未预料到的情况下。 w.r.t.提出了一些工作（例如[21]）。 选择适当的阈值，这可能适用于Donut。
+
+More complicated architectures may be adopted to extend Donut. For example, the sequence-to-sequence RNN architecture [38] may be used to replace the fully connected layers in Donut, so as to handle larger windows, and to deal better with the correlations across points.
+> 可以采用更复杂的体系结构来扩展Donut。 例如，序列到序列的RNN体系结构[38]可用于替换Donut中的完全连接的层，以便处理更大的窗口，并更好地处理跨点的相关性。
+
+
+7 CONCLUSION
+> 结论
+
+In this paper, we proposed an unsupervised anomaly detection algo- rithm Donut based on VAE for seasonal KPIs with local variations. The new techniques enabled Donut to greatly outperform state-of- art supervised and VAE-based anomaly detection algorithms. The best F-scores of Donut range from 0.75 to 0.90 for the studied KPIs.
+> 在本文中，我们提出了一种基于VAE的无监督异常检测算法Donut，用于具有局部变化的周期KPI。 新技术使Donut能够大大胜过最新的监督和基于VAE的异常检测算法。 对于所研究的KPI，甜甜圈的最佳F分数范围为0.75至0.90。
+
+Donut’s excellent performance are explained by our theoretical analysis with KDE interpretation and the new discovery of the time gradient effect. Our experimental and theoretical analyses imply broader impacts: anomaly detection based on dimension reduction needs to use reconstruction; anomaly detection with generative models needs to train with both normal and abnormal data.
+> 通过对KDE的理论分析和对时间梯度效应的新发现，可以解释Donut的出色性能。 我们的实验和理论分析暗示了更广泛的影响：基于降维的异常检测需要使用重构； 生成模型的异常检测需要训练正常和异常数据。
+
+8 ACKNOWLEDGEMENTS
+> 感谢
+
+The work was supported by National Natural Science Foundation of China (NSFC) under grant No. 61472214 and No. 61472210, and Alibaba Innovative Research (AIR). We also thank Prof. Jun Zhu and his PhD. student Jiaxin Shi for helpful and constructive discussions.
+> 这项工作得到了国家自然科学基金（NSFC）的资助，资助号为61472214和61472210，以及阿里巴巴创新研究（AIR）。 我们还要感谢朱俊教授和他的博士。 学生Shi Jiaxin进行有益和建设性的讨论。
+
+REFERENCES
+
+
+[1] Mennatallah Amer, Markus Goldstein, and Slim Abdennadher. 2013. Enhanc- ing one-class support vector machines for unsupervised anomaly detection. In Proceedings of the ACM SIGKDD Workshop on Outlier Detection and Description. ACM, 8–15.
+
+
+[2] Jinwon An and Sungzoon Cho. 2015. Variational Autoencoder based Anomaly Detection using Reconstruction Probability. Technical Report. SNU Data Mining Center. 1–18 pages.
+
+
+[3] Matthew James Beal. 2003. Variational algorithms for approximate Bayesian inference. University of London London.
+
+
+[4] Christopher M Bishop. 2006. Pattern recognition and machine learning. springer. [5] Varun Chandola, Arindam Banerjee, and Vipin Kumar. 2009. Anomaly detection:
+A survey. ACM computing surveys (CSUR) 41, 3 (2009), 15.
+
+
+[6] Yingying Chen, Ratul Mahajan, Baskar Sridharan, and Zhi-Li Zhang. 2013. A
+Provider-side View of Web Search Response Time. In Proceedings of the ACM SIGCOMM 2013 Conference on SIGCOMM (SIGCOMM ’13). ACM, New York, NY, USA, 243–254. https://doi.org/10.1145/2486001.2486035
+
+
+[7] SarahMErfani,SutharshanRajasegarar,ShanikaKarunasekera,andChristopher Leckie. 2016. High-dimensional and large-scale anomaly detection using a linear one-class SVM with deep learning. Pattern Recognition 58 (2016), 121–134.
+
+
+[8] Romain Fontugne, Pierre Borgnat, Patrice Abry, and Kensuke Fukuda. 2010. MAWILab: Combining Diverse Anomaly Detectors for Automated Anomaly Labeling and Performance Benchmarking. In Proceedings of the 6th International COnference (Co-NEXT ’10). ACM, Article 8, 12 pages. https://doi.org/10.1145/ 1921168.1921179
+
+
+[9] ZhouyuFu,WeimingHu,andTieniuTan.2005.Similaritybasedvehicletrajectory clustering and anomaly detection. In Image Processing, 2005. ICIP 2005. IEEE International Conference on, Vol. 2. IEEE, II–602.
+
+
+[10] JohnGeweke.1989.BayesianinferenceineconometricmodelsusingMonteCarlo integration. Econometrica: Journal of the Econometric Society (1989), 1317–1339. 
+
+
+[11] Francisco J Goerlich Gisbert. 2003. Weighted samples, kernel density estimators
+and convergence. Empirical Economics 28, 2 (2003), 335–351. 
+
+
+[12] Ian Goodfellow, Yoshua Bengio, and Aaron Courville. 2016. Deep Learning. MIT
+Press.
+
+
+[13] IanGoodfellow,JeanPouget-Abadie,MehdiMirza,BingXu,DavidWarde-Farley,
+Sherjil Ozair, Aaron Courville, and Yoshua Bengio. 2014. Generative adversarial
+nets. In Advances in neural information processing systems. 2672–2680.
+
+
+[14] Wolfgang Härdle, Axel Werwatz, Marlene Müller, and Stefan Sperlich. 2004. Nonparametric density estimation. Nonparametric and Semiparametric Models
+(2004), 39–83.
+
+
+[15] Diederik Kingma and Jimmy Ba. 2014. Adam: A method for stochastic optimiza-
+tion. arXiv preprint arXiv:1412.6980 (2014).
+
+
+[16] Diederik P Kingma and Max Welling. 2014. Auto-Encoding Variational Bayes. In
+Proceedings of the International Conference on Learning Representations.
+
+
+[17] Florian Knorn and Douglas J Leith. 2008. Adaptive kalman filtering for anomaly
+detection in software appliances. In INFOCOM Workshops 2008, IEEE. IEEE, 1–6. [18] BalachanderKrishnamurthy,SubhabrataSen,YinZhang,andYanChen.2003. Sketch-based change detection: methods, evaluation, and applications. In Pro- ceedings of the 3rd ACM SIGCOMM conference on Internet measurement. ACM,
+234–247.
+
+
+[19] Anukool Lakhina, Mark Crovella, and Christophe Diot. 2004. Diagnosing
+Network-wide Traffic Anomalies. In Proceedings of the 2004 Conference on Appli- cations, Technologies, Architectures, and Protocols for Computer Communications (SIGCOMM ’04). ACM, New York, NY, USA, 219–230. https://doi.org/10.1145/ 1015467.1015492
+
+
+[20] Anukool Lakhina, Mark Crovella, and Christophe Diot. 2005. Mining Anom- alies Using Traffic Feature Distributions. In Proceedings of the 2005 Confer- ence on Applications, Technologies, Architectures, and Protocols for Computer Communications (SIGCOMM ’05). ACM, New York, NY, USA, 217–228. https: //doi.org/10.1145/1080091.1080118 
+
+
+[21] Nikolay Laptev, Saeed Amizadeh, and Ian Flint. 2015. Generic and scalable framework for automated time-series anomaly detection. In Proceedings of the 21th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining. ACM, 1939–1947.
+
+
+[22] Alexander Lavin and Subutai Ahmad. 2015. Evaluating Real-Time Anomaly Detection Algorithms–The Numenta Anomaly Benchmark. In Machine Learning and Applications (ICMLA), 2015 IEEE 14th International Conference on. IEEE, 38– 44.
+
+
+[23] RikardLaxhammar,GoranFalkman,andEgilsSviestins.2009.Anomalydetection in sea traffic-a comparison of the gaussian mixture model and the kernel density estimator. In Information Fusion, 2009. FUSION’09. 12th International Conference on. IEEE, 756–763.
+
+
+[24] Suk-BokLee,DanPei,MohammadTaghiHajiaghayi,IoannisPefkianakis,Songwu Lu, He Yan, Zihui Ge, Jennifer Yates, and Mario Kosseifi. 2012. Threshold com- pression for 3g scalable monitoring. In INFOCOM, 2012 Proceedings IEEE. IEEE, 1350–1358.
+
+
+[25] DapengLiu,YoujianZhao,HaowenXu,YongqianSun,DanPei,JiaoLuo,Xiaowei Jing, and Mei Feng. 2015. Opprentice: Towards Practical and Automatic Anomaly Detection Through Machine Learning. In Proceedings of the 2015 ACM Conference on Internet Measurement Conference (IMC ’15). ACM, New York, NY, USA, 211–224. https://doi.org/10.1145/2815675.2815679 
+
+
+[26] Wei Lu and Ali A Ghorbani. 2009. Network anomaly detection based on wavelet analysis. EURASIP Journal on Advances in Signal Processing 2009 (2009), 4.
+
+
+[27] AjayMahimkar,ZihuiGe,JiaWang,JenniferYates,YinZhang,JoanneEmmons,
+Brian Huntley, and Mark Stockert. 2011. Rapid detection of maintenance induced changes in service performance. In Proceedings of the Seventh COnference on emerging Networking EXperiments and Technologies. ACM, 13.
+
+
+[28] Gerhard Münz, Sa Li, and Georg Carle. 2007. Traffic anomaly detection using k-means clustering. In GI/ITG Workshop MMBnet.
+
+
+[29] Miguel Nicolau, James McDermott, et al. 2016. One-Class Classification for Anomaly Detection with Kernel Density Estimation and Genetic Programming. In European Conference on Genetic Programming. Springer, 3–18.
+
+
+[30] Thomas Dyhre Nielsen and Finn Verner Jensen. 2009. Bayesian networks and decision graphs. Springer Science & Business Media.
+
+
+[31] BrandonPincombe.2005.Anomalydetectionintimeseriesofgraphsusingarma processes. Asor Bulletin 24, 4 (2005), 2.
+
+
+[32] Danilo Jimenez Rezende, Shakir Mohamed, and Daan Wierstra. 2014. Stochastic Backpropagation and Approximate Inference in Deep Generative Models. In Proceedings of the 31st International Conference on International Conference on Machine Learning - Volume 32 (ICML’14). JMLR.org, Beijing, China, II–1278–II– 1286.
+
+
+[33] HaakonRingberg,AugustinSoule,JenniferRexford,andChristopheDiot.2007. Sensitivity of PCA for Traffic Anomaly Detection. In Proceedings of the 2007 ACM SIGMETRICS International Conference on Measurement and Modeling of Computer Systems (SIGMETRICS ’07). ACM, New York, NY, USA, 109–120. https: //doi.org/10.1145/1254882.1254895 
+
+
+[34] Terrence J Sejnowski and Charles R Rosenberg. 1987. Parallel networks that learn to pronounce English text. Complex systems 1, 1 (1987), 145–168.
+
+
+[35] ShashankShanbhagandTilmanWolf.2009.Accurateanomalydetectionthrough parallelism. Network, IEEE 23, 1 (2009), 22–28.
+
+
+[36] MaximilianSölch,JustinBayer,MarvinLudersdorfer,andPatrickvanderSmagt. 2016. Variational inference for on-line anomaly detection in high-dimensional time series. International Conference on Machine Laerning Anomaly detection Workshop (2016).
+
+
+[37] JonathanACSterne,IanRWhite,JohnBCarlin,MichaelSpratt,PatrickRoyston, Michael G Kenward, Angela M Wood, and James R Carpenter. 2009. Multiple imputation for missing data in epidemiological and clinical research: potential and pitfalls. Bmj 338 (2009), b2393.
+
+
+[38] IlyaSutskever,OriolVinyals,andQuocVLe.2014.Sequencetosequencelearning with neural networks. In Advances in neural information processing systems. 3104– 3112.
+
+
+[39] Hao Wang and Dit-Yan Yeung. 2016. Towards Bayesian deep learning: A survey. arXiv preprint arXiv:1604.01662 (2016).
+
+
+[40] Asrul H Yaacob, Ian KT Tan, Su Fong Chien, and Hon Khi Tan. 2010. Arima based network anomaly detection. In Communication Software and Networks, 2010. ICCSN’10. Second International Conference on. IEEE, 205–209.
+
+
+[41] He Yan, Ashley Flavel, Zihui Ge, Alexandre Gerber, Dan Massey, Christos Pa- padopoulos, Hiren Shah, and Jennifer Yates. 2012. Argus: End-to-end service anomaly detection and localization from an ISP’s point of view. In INFOCOM, 2012 Proceedings IEEE. IEEE, 2756–2760.
