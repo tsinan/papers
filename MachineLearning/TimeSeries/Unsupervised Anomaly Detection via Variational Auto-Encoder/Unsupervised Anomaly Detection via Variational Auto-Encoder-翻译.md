@@ -1,6 +1,4 @@
----
 typora-root-url: .
----
 
 # Unsupervised Anomaly Detection via Variational Auto-Encoder
 > 通过变分自编码进行无监督异常检测
@@ -15,7 +13,7 @@ Alibaba Group
 > 摘要
 
 To ensure undisrupted business, large Internet companies need to closely monitor various KPIs (e.g., Page Views, number of online users, and number of orders) of its Web applications, to accurately detect anomalies and trigger timely troubleshooting/mitigation. However, anomaly detection for these seasonal KPIs with various patterns and data quality has been a great challenge, especially without labels. In this paper, we proposed Donut, an unsupervised anomaly detection algorithm based on VAE. Thanks to a few of our key techniques, Donut greatly outperforms a state-of-arts supervised ensemble approach and a baseline VAE approach, and its best F-scores range from 0.75 to 0.9 for the studied KPIs from a top global Internet company. We come up with a novel KDE interpretation of reconstruction for Donut, making it the first VAE-based anomaly detection algorithm with solid theoretical explanation.
-> 为了确保业务不受干扰，大型互联网公司需要密切监视其Web应用程序的各种KPI（例如，页面浏览量，在线用户数量和订单数量），以准确检测异常并及时进行故障排除/缓解。但是，以各种模式和数据质量对这些周期性KPI进行异常检测一直是一个巨大的挑战，尤其是在没有标签的情况下。本文提出了一种基于VAE的无监督异常检测算法Donut。多亏了我们的一些关键技术，Donut大大胜过了最新的监督集成方法和基准VAE方法，对于一家顶尖的全球互联网公司所研究的KPI，其最佳F-score在0.75到0.9之间。我们为Donut提出了一种新颖的KDE解释重构方法，使其成为第一个基于VAE的具有可靠理论解释的异常检测算法。
+> 为了确保业务不受干扰，大型互联网公司需要密切监视其Web应用程序的各种KPI（例如，页面浏览量，在线用户数量和订单数量），以准确检测异常并及时进行故障排除/缓解。但是，以各种模式和数据质量对这些周期性KPI进行异常检测一直是一个巨大的挑战，尤其是在没有标签的情况下。本文提出了一种基于VAE的无监督异常检测算法Donut。多亏了我们的一些关键技术，Donut大大胜过了最新的监督集成方法和基准VAE方法，对于一家顶尖的全球互联网公司所研究的KPI，其最佳F-score在0.75到0.9之间。我们为Donut的重构提出了一种新颖的KDE解释方法，使其成为第一个基于VAE的具有可靠理论解释的异常检测算法。
 
 CCS CONCEPTS
 • Computing methodologies → Anomaly detection; • Information systems → Traffic analysis; 
@@ -64,11 +62,9 @@ We can now formalize the “normal patterns” of seasonal KPIs as a combination
 Because operators need to deal with the anomalies for troubleshooting/mitigation, some of the anomalies are anecdotally labeled. Note that such occasional labels’ coverage of anomalies are far from what’s needed for typical supervised learning algorithms. 
 > 由于操作员需要处理异常以进行故障排除/缓解，因此某些异常会被标记为异常。请注意，此类偶然标签对异常的覆盖范围与典型的监督学习算法所需要的相去甚远。
 
-Anomaly detection on KPIs can be formulated as follows: for any time t, given historical observations xt−T +1, . . . , xt , determine whether an anomaly occurs (denoted by yt = 1). An anomaly detection algorithm typically computes a real-valued score indicating the certainty of having yt = 1, e.g., p(yt = 1|xt−T +1, . . . , xt ), instead of directly computing yt . Human operators can then affect whether to declare an anomaly by choosing a threshold, where a data point with a score exceeding this threshold indicates an anomaly.
+Anomaly detection on KPIs can be formulated as follows: for any time t, given historical observations $x_{t-T+1},...,x_t$  determine whether an anomaly occurs (denoted by $y_t = 1$). An anomaly detection algorithm typically computes a real-valued score indicating the certainty of having $y_t = 1$, e.g., $p(y_t = 1|x_{t−T +1},..., x_t)$, instead of directly computing $y_t$ . Human operators can then affect whether to declare an anomaly by choosing a threshold, where a data point with a score exceeding this threshold indicates an anomaly.
 
-![](resources/formula1.PNG)
-
-> 可以将KPI的异常检测形式化如下：对于任何时间t，给定历史观测值xt-T +1，...，xt，确定是否发生异常（以yt = 1表示）。异常检测算法通常计算表示具有yt = 1的确定性的实值分数，例如p（yt = 1 | xt-T +1，...，xt），而不是直接计算yt。然后，操作员可以通过选择阈值来影响是否声明异常，在该阈值中，得分超过该阈值的数据点表示异常。
+> 可以将KPI的异常检测形式化如下：对于任何时间t，给定历史观测值$x_{t-T+1},...,x_t$ 确定是否发生异常（以$y_t = 1$表示）。异常检测算法通常计算表示具有$y_t = 1$的确定性的实值分数，例如$p(y_t = 1|x_{t−T +1},..., x_t)$，而不是直接计算$y_t$。然后，操作员可以通过选择阈值来影响是否声明异常，在该阈值中，得分超过该阈值的数据点表示异常。
 
 2.2 Previous Work
 > 之前的工作
@@ -100,48 +96,63 @@ The problem statement of this paper is as follows. We aim at an unsupervised ano
 Deep Bayesian networks use neural networks to express the relationships between variables, such that they are no longer restricted to simple distribution families, thus can be easily applied to complicated data. Variational inference techniques [12] are often adopted in training and prediction, which are efficient methods to solve posteriors of the distributions derived by neural networks.
 > 深度贝叶斯网络使用神经网络来表达变量之间的关系，因此它们不再局限于简单的分布，因此可以轻松地应用于复杂的数据。在训练和预测中经常采用变分推理技术[12]，这是解决由神经网络得出的后验分布的有效方法。
 
-VAE is a deep Bayesian network. It models the relationship between two random variables, latent variable z and visible variable x. A prior is chosen for z, which is usually multivariate unit Gaussian N (0, I). After that, x is sampled from pθ(x|z), which is derived from a neural network with parameter θ. The exact form of pθ(x|z) is chosen according to the demand of task. The true posterior pθ(z|x) is intractable by analytic methods, but is necessary for training and often useful in prediction, thus the variational inference techniques are used to fit another neural network as the approximation posterior qϕ(z|x). This posterior is usually assumed to be N (µϕ(x),σ2ϕ(x)), where µϕ (x) and σϕ(x) are derived by neural networks. The architecture of VAE is shown as Fig 2.
-> VAE是一个深层的贝叶斯网络。它对两个随机变量（潜在变量z和可见变量x）之间的关系进行建模。为z选择一个先验，它通常是多元单位高斯N（0，I）。此后，从pθ（x | z）采样x，该pθ（x | z）来自具有参数θ的神经网络。根据任务需求选择pθ（x | z）的确切形式。真实的后验pθ（z | x）是解析方法所难解的，但是对于训练而言是必不可少的，并且通常在预测中有用，因此，变分推断技术可用于拟合另一个神经网络作为近似后验qϕ（z | x）。该后验通常假定为N（µϕ（x），σ2ϕ（x）），其中µϕ（x）和σϕ（x）是通过神经网络得出的。 VAE的架构如图2所示。
+VAE is a deep Bayesian network. It models the relationship between two random variables, latent variable z and visible variable x. A prior is chosen for z, which is usually multivariate unit Gaussian $N(0,I)$. After that, x is sampled from $p_\theta(x|z)$, which is derived from a neural network with parameter $\theta$. The exact form of $p_\theta(x|z)$ is chosen according to the demand of task. The true posterior $p_\theta(z|x)$ is intractable by analytic methods, but is necessary for training and often useful in prediction, thus the variational inference techniques are used to fit another neural network as the approximation posterior $q_\phi(z|x)$. This posterior is usually assumed to be $N(\mu_\phi(x), \sigma^2_\phi(x))$, where $\mu_\phi(x)$ and $\sigma_\phi(x)$are derived by neural networks. The architecture of VAE is shown as Fig 2.
+> VAE是一个深层的贝叶斯网络。它对两个随机变量（潜在变量z和可见变量x）之间的关系进行建模。为z选择一个先验，它通常是多元单位高斯$N(0,I)$。此后，从$p_\theta(x|z)$采样x，该$p_\theta(x|z)$来自具有参数$\theta$的神经网络。根据任务需求选择$p_\theta(x|z)$的确切形式。真实的后验$p_\theta(z|x)$是解析方法所难解的，但是对于训练而言是必不可少的，并且通常在预测中有用，因此，变分推断技术可用于拟合另一个神经网络作为近似后验$q_\phi(z|x)$。该后验通常假定为$N(\mu_\phi(x), \sigma^2_\phi(x))$，其中$\mu_\phi(x)$和$\sigma_\phi(x)$是通过神经网络得出的。 VAE的架构如图2所示。
 
-![](resources/formula2.PNG)
+
 ![](resources/figure2.PNG)
 
 SGVB [16, 32] is a variational inference algorithm that is often used along with VAE, where the approximated posterior and the generative model are jointly trained by maximizing the evidence lower bound (ELBO, Eqn (1)). We did not adopt more advanced variational inference algorithms, since SGVB already works.
 
-![](resources/formula3.PNG)
+$$
+\begin{equation}
+\begin{aligned}   
+logp_\theta(x) &\geq logp_\theta(x)-KL[q_\phi(z|x)||p_\theta(z|x)]  \\
+&= L(x) \\ 
+&= \mathbb{E}_{q_\phi(z|x)}[logp_\theta(x)+logp_\theta(z|x)-logq_\phi(z|x)] \\
+&= \mathbb{E}_{q_\phi(z|x)}[logp_\theta(x,z)-logq_\phi(z|x)] \\
+&= \mathbb{E}_{q_\phi(z|x)}[logp_\theta(x|z)+logp_\theta(z)-logq_\phi(z|x)] \\
+\end{aligned}
+\tag{1}
+\end{equation}
+$$
 
-Monte Carlo integration [10] is often adopted to approximate the expectation in Eqn (1), as Eqn (2), where z(l) ,l = 1 . . . L are samples from qϕ(z|x). We stick to this method throughout this paper.
+Monte Carlo integration [10] is often adopted to approximate the expectation in Eqn (1), as Eqn (2), where $z^{(l)} , l = 1 . . . L$ are samples from $q_\phi(z|x)$. We stick to this method throughout this paper.
 
-![](resources/formula4.PNG)
+$\mathbb{E}_{q_\phi(z|x)}[f(z)] \approx \dfrac{1}{L}\sum\limits_{l=1}^Lf(z^{(l)}) \tag{2}$
 
 > SGVB [16，32]是一种变分推理算法，经常与VAE一起使用，其中通过最大化证据下界来联合训练近似后验模型和生成模型（ELBO，方程（1））。 由于SGVB已经起作用，因此我们没有采用更高级的变分推理算法。
-> 
-> 通常采用蒙特卡洛积分[10]来近似式（1）中的期望，即式（2），其中z（l），l = 1。 。 。 L是来自qϕ（z | x）的样本。 在整个本文中，我们都坚持使用这种方法。
+> $$
+> \begin{equation}\begin{aligned}   logp_\theta(x) &\geq logp_\theta(x)-KL[q_\phi(z|x)||p_\theta(z|x)]  \\&= L(x) \\ &= \mathbb{E}_{q_\phi(z|x)}[logp_\theta(x)+logp_\theta(z|x)-logq_\phi(z|x)] \\&= \mathbb{E}_{q_\phi(z|x)}[logp_\theta(x,z)-logq_\phi(z|x)] \\&= \mathbb{E}_{q_\phi(z|x)}[logp_\theta(x|z)+logp_\theta(z)-logq_\phi(z|x)] \\\end{aligned}\tag{1}\end{equation}
+> $$
+> 通常采用蒙特卡洛积分[10]来近似式（1）中的期望，即式（2），其中$z^{(l)} , l = 1 . . . L$是来自$q_\phi(z|x)$的样本。 在整个本文中，我们都坚持使用这种方法。
+>
+> $\mathbb{E}_{q_\phi(z|x)}[f(z)] \approx \dfrac{1}{L}\sum\limits_{l=1}^Lf(z^{(l)}) \tag{2}$
 
 3 ARCHITECTURE
 > 架构
 
 The overall architecture of our algorithm Donut is illustrated as Fig 3. The three key techniques are Modified ELBO and Missing Data Injection during training, and MCMC Imputation in detection.
 
-![](resources/figure3.PNG)
+![](resources/figure3.jpg)
 
 3.1 Network Structure
 > 网络结构
 
-As aforementioned in § 2.1, the KPIs studied in this paper are assumed to be time sequences with Gaussian noises. However, VAE is not a sequential model, thus we apply sliding windows [34] of lengthW over the KPIs: for each point xt, we use xt-W +1, . . . , xt as the x vector of VAE. This sliding window was first adopted because of its simplicity, but it turns out to actually bring an important and beneficial consequence, which will be discussed in § 5.1.
-> 如第2.1节所述，本文研究的KPI假定为具有高斯噪声的时间序列。 但是，VAE不是顺序模型，因此我们在KPI上应用lengthW的滑动窗口[34]：对于每个点xt，我们使用xt-W +1，...。 。 。 ，xt作为VAE的x向量。 该滑动窗口由于其简单性而首先被采用，但实际上却带来了重要而有益的结果，将在第5.1节中进行讨论。
+As aforementioned in § 2.1, the KPIs studied in this paper are assumed to be time sequences with Gaussian noises. However, VAE is not a sequential model, thus we apply sliding windows [34] of lengthW over the KPIs: for each point $x_t$, we use $x_{t-W+1}, . . . , x_t$ as the x vector of VAE. This sliding window was first adopted because of its simplicity, but it turns out to actually bring an important and beneficial consequence, which will be discussed in § 5.1.
+> 如第2.1节所述，本文研究的KPI假定为具有高斯噪声的时间序列。 但是，VAE不是顺序模型，因此我们在KPI上应用lengthW的滑动窗口[34]：对于每个点$x_t$，我们使用 $x_{t-W+1}, . . . , x_t$ 作为VAE的x向量。 该滑动窗口由于其简单性而首先被采用，但实际上却带来了重要而有益的结果，将在第5.1节中进行讨论。
 
-The overall network structure of Donut is illustrated in Fig 4, where the components with double-lined outlines (e.g., Sliding Window x, W Dimensional at bottom left) are our new designs and the remaining components are from standard VAEs. The prior pθ (z) is chosen to be N (0, I). Both x and z posterior are chosen to be diagonal Gaussian: pθ (x|z) = N (µx,σx2I), and qϕ(z|x) = N (µz,σz2I), where µx, µz and σx, σz are the means and standard deviations of each independent Gaussian component. z is chosen to be K dimensional. Hidden features are extracted from x and z, by separated hidden layers fϕ(x) and fθ (z). Gaussian parameters of x and z are then derived from the hidden features. The means are derived from linear layers: µx = W⊤µx fθ (z) + bµx and µz = W⊤µz fϕ(x) + bµz . The standard deviations are derived from soft-plus layers, plus a non-negative small number ϵ: σx = SoftPlus[W⊤σx fθ (z) + bσx ] + ϵ and σz = SoftPlus[W⊤σz fϕ(x) + bσz ] + ϵ, where SoftPlus[a] = log[exp(a) + 1]. All the W-s and b-s presented here are parameters of corresponding layers. Note when scalar function f (x) is applied on vector x, it means to apply on every component. 
+The overall network structure of Donut is illustrated in Fig 4, where the components with double-lined outlines (e.g., Sliding Window x, W Dimensional at bottom left) are our new designs and the remaining components are from standard VAEs. The prior $p_\theta(z)$ is chosen to be $N (0, I)$. Both x and z posterior are chosen to be diagonal Gaussian: $p_\theta (x|z) = N(\mu_x,\sigma_x^2I)$, and $q_\phi(z|x)=N(\mu_z,\sigma_z^2I)$, where $\mu_x$, $\mu_z$ and $\sigma_x$, $\sigma_z$ are the means and standard deviations of each independent Gaussian component. z is chosen to be K dimensional. Hidden features are extracted from x and z, by separated hidden layers $f_\phi(x)$ and $f_\theta(z)$. Gaussian parameters of x and z are then derived from the hidden features. The means are derived from linear layers: $\mu_x = W_{\mu_x}^\top f_\theta(z) + b_{\mu_x}$ and $\mu_z = W_{\mu_z}^\top f_\phi(x) + b_{\mu_z}$ . The standard deviations are derived from soft-plus layers, plus a non-negative small number $\varepsilon$: $\sigma_x = SoftPlus[W_{\sigma_x}^\top f_\theta(z) + b_{\sigma_x}] + \varepsilon$ and $ \sigma_z = SoftPlus[W_{\sigma_z}^\top f_\phi(x) + b_{\sigma_z}] + \varepsilon$ , where $SoftPlus[a] = log[exp(a) + 1]$. All the W-s and b-s presented here are parameters of corresponding layers. Note when scalar function $f(x)$ is applied on vector x, it means to apply on every component. 
 
 ![](resources/figure4.PNG)
 
-![](resources/formula5.PNG)
+> Donut的整体网络结构如图4所示，其中带有双线轮廓的组件（例如，左下角的：滑动窗口x，W维向量）是我们的新设计，其余组件来自标准VAE。先验的 $p_\theta(z)$ 选择为 $N (0, I)$。将x和z的后验均选择为对角高斯：$p_\theta (x|z) = N(\mu_x,\sigma_x^2I)$, 而 $q_\phi(z|x)=N(\mu_z,\sigma_z^2I)$，其中 $\mu_x$, $\mu_z$ 和 $\sigma_x$, $\sigma_z$ 为每个独立高斯分量的均值和标准偏差。 z选择为K维。通过分离的隐藏层 $f_\phi(x)$ 和 $f_\theta(z)$从x和z中提取隐藏特征。然后从隐藏特征中得出x和z的高斯参数。均值来自线性层：$\mu_x = W_{\mu_x}^\top f_\theta(z) + b_{\mu_x}$和$\mu_z = W_{\mu_z}^\top f_\phi(x) + b_{\mu_z}$。标准偏差是从soft-plus层学习得出并加上一个非负小数$\varepsilon$：$\sigma_x = SoftPlus[W_{\sigma_x}^\top f_\theta(z) + b_{\sigma_x}] + \varepsilon$和 $ \sigma_z = SoftPlus[W_{\sigma_z}^\top f_\phi(x) + b_{\sigma_z}] + \varepsilon$，其中$SoftPlus[a] = log[exp(a) + 1]$。这里介绍的所有W-s和b-s是相应层的参数。注意，将标量函数 $f(x)$ 应用于向量x时，意味着将其应用于每个分量。
 
-> Donut的整体网络结构如图4所示，其中带有双线轮廓的组件（例如，左下角的：滑动窗口x，W维向量）是我们的新设计，其余组件来自标准VAE。先验的pθ（z）选择为N（0，I）。将x和z的后验均选择为对角高斯：pθ（x | z）= N（µx，σx2I），而qϕ（z | x）= N（µz，σz2I），其中µx，µz和σx，σz为每个独立高斯分量的均值和标准偏差。 z选择为K维。通过分离的隐藏层fϕ（x）和fθ（z）从x和z中提取隐藏特征。然后从隐藏特征中得出x和z的高斯参数。均值来自线性层："见截图"。标准偏差是从soft-plus层加上一个非负小数derived得出的：“见截图”，其中SoftPlus [a] = log [exp（a）+ 1]。这里介绍的所有W-s和b-s是相应层的参数。注意，将标量函数f（x）应用于向量x时，意味着将其应用于每个分量。
 
-We choose to derive σx and σz in such a way, instead of deriving logσx and logσz using linear layers as others do, for the following reason. The local variations in the KPIs of our interest are so small that σx and σz would probably get extremely close to zero, making logσx and logσz unbounded. This would cause severe numerical problems when computing the likelihoods of Gaussian variables.We thus use the soft-plus and the ϵ trick to prevent such problems.
 
-> 我们选择以这种方式导出σx和σz，而不是像其他人那样使用线性层来导出logσx和logσz，原因如下。 我们感兴趣的KPI的局部变化非常小，以至于σx和σz可能非常接近于零，从而使logσx和logσz无界。 在计算高斯变量的可能性时，这将导致严重的数值问题，因此我们使用softplus和ϵ技巧来防止此类问题。
+We choose to derive $\sigma_x$ and $\sigma_z$ in such a way, instead of deriving $log\sigma_x$ and $log\sigma_z$ using linear layers as others do, for the following reason. The local variations in the KPIs of our interest are so small that $\sigma_x$ and $\sigma_z$ would probably get extremely close to zero, making  $log\sigma_x$ and $log\sigma_z$ unbounded. This would cause severe numerical problems when computing the likelihoods of Gaussian variables.We thus use the soft-plus and the $\varepsilon$ trick to prevent such problems.
+
+> 我们选择以这种方式导出$\sigma_x$和$\sigma_z$，而不是像其他人那样使用线性层来导出 $log\sigma_x$ 和$log\sigma_z$ ，原因如下。 我们感兴趣的KPI的局部变化非常小，以至于$\sigma_x$和$\sigma_z$可能非常接近于零，从而使 $log\sigma_x$ 和$log\sigma_z$ 无界。 在计算高斯变量的可能性时，这将导致严重的数值问题，因此我们使用softplus和$\varepsilon$技巧来防止此类问题。
 
 We intentionally choose fully-connected layers as the structure of the hidden layers, making the overall architecture fairly simple. This is because our objective is to develop an VAE based anomaly detection algorithm with solid theoretical explanation, and a simple network structure would definitely make it easier to analyze the internal behavior in the perplexing “variational auto-encoder”.
 
@@ -150,22 +161,28 @@ We intentionally choose fully-connected layers as the structure of the hidden la
 3.2 Training
 > 训练
 
-Training is straightforward by optimizing the ELBO (Eqn (1)) with SGVB [16] algorithm. Since it is reported by [16] that one sample is already sufficient for computing the ELBO when training VAE with the SGVB algorithm, we let sampling number L = 1 during training. We also apply the re-parameterization trick as required by SGVB: instead of sampling z ∼ N (µz,σz2I), a dedicated random variable ξ ∼ N (0, I) is sampled, such that we can rewrite z as z(ξ ) = µz + ξ · σz. Sampling on ξ is independent with the parameters ϕ, which allows us to apply stochastic gradient descent as if VAE is an ordinary neural network. The windows of x are randomly shuffled before every epoch, which is beneficial for stochastic gradient descent. A sufficiently large number of x are taken in every mini-batch, which is critical for stabilizing the training, since sampling introduces extra randomness.
-> 通过使用SGVB [16]算法优化ELBO（等式1），训练很简单。由于[16]报告说，当使用SGVB算法训练VAE时，一个样本已经足以计算ELBO，因此在训练期间让采样数L = 1。我们还按照SGVB的要求应用了重新参数化技巧：代替对z〜N（µz，σz2I）进行采样，对专用随机变量ξ〜N（0，I）进行采样，以便将z重写为z（ξ ）= µz +ξ·σz。 ξ上的采样与参数independent无关，这使我们能够像VAE是普通神经网络一样应用随机梯度下降。 x的窗口在每个时期之前随机打乱，这对于随机梯度下降很有用。在每个mini-batch中要获取足够多的x，这对于稳定训练至关重要，因为采样会引入额外的随机性。
+Training is straightforward by optimizing the ELBO (Eqn (1)) with SGVB [16] algorithm. Since it is reported by [16] that one sample is already sufficient for computing the ELBO when training VAE with the SGVB algorithm, we let sampling number L = 1 during training. We also apply the re-parameterization trick as required by SGVB: instead of sampling $z \sim N(\mu_z,\sigma_z^2I)$, a dedicated random variable $\xi \sim N(0, I)$ is sampled, such that we can rewrite z as $z(\xi ) = \mu_z + \xi · \sigma_z$. Sampling on $\xi$ is independent with the parameters $\phi$, which allows us to apply stochastic gradient descent as if VAE is an ordinary neural network. The windows of x are randomly shuffled before every epoch, which is beneficial for stochastic gradient descent. A sufficiently large number of x are taken in every mini-batch, which is critical for stabilizing the training, since sampling introduces extra randomness.
+> 通过使用SGVB [16]算法优化ELBO（等式1），训练很简单。由于[16]报告说，当使用SGVB算法训练VAE时，一个样本已经足以计算ELBO，因此在训练期间让采样数L = 1。我们还按照SGVB的要求应用了重新参数化技巧：为替代对$z \sim N(\mu_z,\sigma_z^2I)$进行采样，使用对专用随机变量 $\xi \sim N(0, I)$ 进行采样，以便将z重写为 $z(\xi ) = \mu_z + \xi · \sigma_z$。 $\xi$上的采样与参数$\phi$无关，这使我们能够像VAE是普通神经网络一样应用随机梯度下降。 x的窗口在每个时期之前随机打乱，这对于随机梯度下降很有用。在每个mini-batch中要获取足够多的x，这对于稳定训练至关重要，因为采样会引入额外的随机性。
 
 As discussed in § 2.2, the VAE based anomaly detection works by learning normal patterns, thus we need to avoid learning abnormal patterns whenever possible. Note that the “anomalies” in training are labeled anomalies, and there can be no labels for a given KPI, in which case the anomaly detection becomes an unsupervised one.
-> 如第2.2节所述，基于VAE的异常检测通过学习正常模式来工作，因此我们需要尽可能避免学习abnormal异常模式。请注意，训练中的“异常anomalies”被标记为异常，并且对于给定的KPI可能没有标记，在这种情况下，异常检测将成为无监督的检测。
+> 如第2.2节所述，基础的VAE的异常检测通过学习正常模式来工作，因此它需要尽可能避免学习abnormal异常模式。请注意，训练中的“异常anomalies”被标记为异常，并且对于给定的KPI可能没有标记，在这种情况下，异常检测将成为无监督的检测。
 
 One might be tempted to replace labeled anomalies (if any) and missing points (known) in training data with synthetically generated values. Some previous work has proposed methods to impute missing data, e.g., [37], but it is hard to produce data that follow the “normal patterns” well enough. More importantly, training a generative model with data generated by another algorithm is quite absurd, since one major application of generative models is exactly to generate data. Using data imputed by any algorithm weaker than VAE would potentially downgrade the performance. Thus we do not adopt missing data imputation before training VAE, instead we choose to simply fill the missing points as zeros (in the Data Preparation step in Fig 3), and then modify the ELBO to exclude the contribution of anomalies and missing points (shown as Modified ELBO (M-ELBO for short hereafter) in the Training step in Fig 3).
 > 可能会尝试用合成生成的值替换训练数据中的标记异常（如果有）和缺失点（已知）。先前的一些工作已经提出了填补缺失数据的方法，例如[37]，但是很难产生足够好地遵循“正常模式”的数据。更重要的是，用另一种算法生成的数据训练生成模型是很荒谬的，因为生成模型的一个主要应用就是生成数据。使用由比VAE更弱的算法估算的数据可能会降低性能。因此，我们不会在训练VAE之前采用缺失数据插补，而是选择简单地将缺失点填充为零（在图3中的数据准备步骤中），然后修改ELBO以排除异常和缺失点的影响（修改后的ELBO（以下简称M-ELBO），如图3中的“训练”步骤。
 
-![](resources/figure3.PNG)
 
-More specifically, we modify the standard ELBO in Eqn (1) to our version Eqn (3). αw is defined as an indicator, where aw = 1 indicates xw being not anomaly or missing, and aw = 0 otherwise. β is defined as (ÍWw=1 αw )/W . Note that Eqn (3) still holds when there is no labeled anomalies in the training data. The contribution of pθ (xw |z) from labeled anomalies and missing points are directly excluded by αw , while the scaling factor β shrinks the contribution of pθ (z) according to the ratio of normal points in x. This modification trains Donut to correctly reconstruct the normal points within x, even if some points in x are abnormal. We do not shrink qϕ(z|x), because of the following two considerations. Unlike pθ (z), which is part of the generative network (i.e., model of the “normal patterns”), qϕ(z|x) just describes the mapping from x to z, without considering“normal patterns”. Thus, discounting the contribution of qϕ(z|x) seems not necessary. Another reason is that Eqϕ (z|x) [− logqϕ(z|x)] is exactly the entropy of qϕ(z|x). This entropy term actually has some other roles in training (which will be discussed in § 5.3), thus might be better kept untouched.
 
-![](resources/formula6.PNG)
+More specifically, we modify the standard ELBO in Eqn (1) to our version Eqn (3). $α_w$ is defined as an indicator, where $a_w = 1$ indicates $x_w$ being not anomaly or missing, and  $a_w = $ 0 otherwise. β is defined as $(\sum_{w=1}^W α_w )/W$ . Note that Eqn (3) still holds when there is no labeled anomalies in the training data. The contribution of $p_\theta (x_w|z)$ from labeled anomalies and missing points are directly excluded by $α_w$ , while the scaling factor β shrinks the contribution of $p_\theta (z)$ according to the ratio of normal points in x. This modification trains Donut to correctly reconstruct the normal points within x, even if some points in x are abnormal. We do not shrink $q_\phi(z|x)$, because of the following two considerations. Unlike  $p_\theta (z)$ , which is part of the generative network (i.e., model of the “normal patterns”), $q_\phi(z|x)$just describes the mapping from x to z, without considering“normal patterns”. Thus, discounting the contribution of $q_\phi(z|x)$ seems not necessary. Another reason is that $\mathbb{E}_{q_\phi}(z|x)[-logq_\phi(z|x)]$ is exactly the entropy of $q_\phi(z|x)$. This entropy term actually has some other roles in training (which will be discussed in § 5.3), thus might be better kept untouched.
+$$
+\widetilde{L}(x) = \mathbb{E}_{q_\phi(z|x)}[\sum_{w=1}^W \alpha_w log p_\theta (x_w|z) + \beta log p_\theta(z) - log q_\phi(z|x)] \tag{3}
+$$
 
-> 更具体地说，我们将等式（1）中的标准ELBO修改为我们的等式（3）。 αw被定义为一个指标，其中aw = 1表示xw没有异常或缺失，否则aw = 0。 β定义为（∑αw）/ W。请注意，当训练数据中没有标记的异常anomalies时，方程（3）仍然成立。 αw直接排除了来自标记异常anomalies和缺失点的pθ（xw | z）的贡献，而缩放因子β根据x中法向点的比率缩小了pθ（z）的贡献。即使x中的某些点异常，此修改也会训练Donut正确地重建x中的法线点。由于以下两个考虑，我们不缩小qϕ（z | x）。与作为生成网络（即“正常模式”的模型）一部分的pθ（z）不同，qϕ（z | x）仅描述了从x到z的映射，而没有考虑“正常模式”。因此，似乎没有必要去掉qϕ（z | x）的贡献。另一个原因是Eqϕ（z | x）[-logqϕ（z | x）]恰好是qϕ（z | x）的熵。这个熵术语实际上在训练中还有其他作用（将在5.3节中讨论），因此最好保持不变。
+
+> 更具体地说，我们将等式（1）中的标准ELBO修改为我们的等式（3）。 $α_w$被定义为一个指标，其中$a_w = 1$表示$x_w$没有异常或缺失，否则 $a_w = 0$ 。 β定义为$(\sum_{w=1}^W α_w )/W$。请注意，当训练数据中没有标记的异常anomalies时，方程（3）仍然成立。 $α_w$直接排除了来自标记异常anomalies和缺失点的$p_\theta (x_w|z)$的贡献，而缩放因子β根据x中正常点的比率缩小了$p_\theta (z)$的贡献。即使x中的某些点异常，此修改也会训练Donut正确地重建x中的正常点。由于以下两个考虑，我们不缩小$q_\phi(z|x)$。与作为生成网络（即“正常模式”的模型）一部分的 $p_\theta (z)$ 不同，$q_\phi(z|x)$仅描述了从x到z的映射，而没有考虑“正常模式”。因此，似乎没有必要去掉$q_\phi(z|x)$的贡献。另一个原因是$\mathbb{E}_{q_\phi}(z|x)[-logq_\phi(z|x)]$恰好是$q_\phi(z|x)$的熵。这个熵项实际上在训练中还有其他作用（将在5.3节中讨论），因此最好保持不变。
+> $$
+> \widetilde{L}(x) = \mathbb{E}_{q_\phi(z|x)}[\sum_{w=1}^W \alpha_w log p_\theta (x_w|z) + \beta log p_\theta(z) - log q_\phi(z|x)] \tag{3}
+> $$
+> 
 
 Besides Eqn (3), another way to deal with anomalies and missing points is to exclude all windows containing these points from training data. This approach turns out to be inferior to M-ELBO. We will demonstrate the performance of both approaches in § 4.5.
 > 除了式（3），处理异常和缺失点的另一种方法是从训练数据中排除所有包含这些点的窗口。 事实证明，这种方法不如M-ELBO。 我们将在第4.5节中演示两种方法的性能。
@@ -176,28 +193,24 @@ Furthermore, we also introduce missing data injection in training: we randomly s
 3.3 Detection
 > 检测
 
-Unlike discriminative models which are designed for just one purpose (e.g., a classifier is designed for just computing the classification probability p(y|x)), generative models like VAE can derive various outputs. In the scope of anomaly detection, the likelihood of observation window x, i.e., pθ (x) in VAE, is an important output, since we want to see how well a given x follows the normal patterns. Monte Carlo methods can be adopted to compute the probability density of x, by pθ (x) = Epθ (z) [pθ (x|z)]. Despite the theoretically nice interpretation, sampling on the prior actually does not work well enough in practice, as will be shown in § 4.
+Unlike discriminative models which are designed for just one purpose (e.g., a classifier is designed for just computing the classification probability $p(y|x)$), generative models like VAE can derive various outputs. In the scope of anomaly detection, the likelihood of observation window x, i.e., $p_\theta (x)$ in VAE, is an important output, since we want to see how well a given x follows the normal patterns. Monte Carlo methods can be adopted to compute the probability density of x, by $p_\theta (x) = \mathbb{E}_{p_\theta (z)} [p_\theta (x|z)]$. Despite the theoretically nice interpretation, sampling on the prior actually does not work well enough in practice, as will be shown in § 4.
 
-![](resources/formula7.PNG)
+> 不同于仅为一个目的而设计的判别模型（例如，为仅计算分类概率 $p(y|x)$而设计的分类器），诸如VAE的生成模型可以得出各种输出。在异常检测的范围内，观察窗口x的似然概率（即VAE中的 $p_\theta (x)$）是重要的输出，因为我们想知道给定的x遵循正常模式的程度。可以采用蒙特卡洛方法，通过 $p_\theta (x) = \mathbb{E}_{p_\theta (z)} [p_\theta (x|z)]$计算x的概率密度。尽管在理论上有很好的解释，但实际上，对先验样本进行采样实际上并不能很好地完成工作，如第4节所示。
 
-> 不同于仅为一个目的而设计的判别模型（例如，为仅计算分类概率p（y | x）而设计的分类器），诸如VAE的生成模型可以得出各种输出。在异常检测的范围内，观察窗x的可能性（即VAE中的pθ（x））是重要的输出，因为我们想知道给定的x遵循正常模式的程度。可以采用蒙特卡洛方法，通过pθ（x）=Epθ（z）[pθ（x | z）]计算x的概率密度。尽管在理论上有很好的解释，但实际上，对先验样本进行采样实际上并不能很好地完成工作，如第4节所示。
+Instead of sampling on the prior, one may seek to derive useful outputs with the variational posterior $q_\phi(z|x)$. One choice is to compute $\mathbb{E}_{q_\phi(z|x)}[p_\theta(x|z)]$. Although similar to $p_\theta (x)$, it is actually not a well-defined probability density. Another choice is to compute  $\mathbb{E}_{q_\phi(z|x)}[log p_\theta(x|z)]$, which is adopted in [2], named as “reconstruction probability”. These two choices are very similar. Since only the ordering rather than the exact values of anomaly scores are concerned in anomaly detection, we follow [2] and use the latter one. As an alternative, the ELBO (Eqn (1)) may also be used for approximating $logp_\theta (x)$, as in [36]. However, the extra term $\mathbb{E}_{q_\phi(z|x)}[log p_\theta(z)-logq_\phi(z|x)]$ in ELBO makes its internal mechanism hard to understand. Since the experiments in [36] does not support this alternative’s superiority, we choose not to use it. 
 
-Instead of sampling on the prior, one may seek to derive useful outputs with the variational posterior qϕ(z|x). One choice is to compute Eqϕ (z|x) [pθ (x|z)]. Although similar to pθ (x), it is actually not a well-defined probability density. Another choice is to compute Eqϕ (z|x) [logpθ (x|z)], which is adopted in [2], named as “reconstruction probability”. These two choices are very similar. Since only the ordering rather than the exact values of anomaly scores are concerned in anomaly detection, we follow [2] and use the latter one. As an alternative, the ELBO (Eqn (1)) may also be used for approximating logpθ (x), as in [36]. However, the extra term Eqϕ (z|x) [] logpθ (z) − logqϕ(z|x) ] in ELBO makes its internal mechanism hard to understand. Since the experiments in [36] does not support this alternative’s superiority, we choose not to use it. 
+> 代替在先验上采样，人们可能会寻求通过后验$q_\phi(z|x)$来得出有用的输出。一种选择是计算等式$\mathbb{E}_{q_\phi(z|x)}[p_\theta(x|z)]$。尽管与$p_\theta (x)$相似，但实际上并不是一个明确定义的概率密度。另一种选择是计算公式[2]中采用的$\mathbb{E}_{q_\phi(z|x)}[log p_\theta(x|z)]$，称为“重建概率”。这两个选择非常相似。由于在异常检测中只关注异常评分的顺序而不是确切值，因此我们遵循[2]并使用后者。作为替代方案，如[36]中所述，ELBO（等式（1））也可用于近似$logp_\theta (x)$。但是，ELBO中的额外项$\mathbb{E}_{q_\phi(z|x)}[log p_\theta(z)-logq_\phi(z|x)]$ 使其内部机制难以理解。由于[36]中的实验不支持该替代方法的优越性，因此我们选择不使用它。
 
-![](resources/formula8.PNG)
+During detection, the anomalies and missing points in a testing window x can bring bias to the mapped z, and further make the reconstruction probability inaccurate, which would be discussed in § 5.2. Since the missing points are always known (as “null”),  we have the chance to eliminate the biases introduced by missing points. We choose to adopt the MCMC-based missing data imputation technique with the trained VAE, which is proposed by [32]. Meanwhile, we do not know the exact positions of anomalies before detection, thus MCMC cannot be adopted on anomalies.
+> 在检测期间，测试窗口x中的异常和缺失点可能给映射的z带来偏差，并进一步使重建概率不准确，这将在5.2节中讨论。 由于遗漏点始终是已知的（“null”），因此我们有机会消除遗漏点带来的偏差。 我们选择采用已训练的VAE进行的基于MCMC的缺失数据插补技术，该技术由[32]提出。 同时，我们不知道异常在检测之前的确切位置，因此无法对异常采用MCMC。
 
-> 代替在先验上采样，人们可能会寻求通过后验qϕ（z | x）来得出有用的输出。一种选择是计算等式Eqϕ（z | x）[pθ（x | z）]。尽管与pθ（x）相似，但实际上并不是一个明确定义的概率密度。另一种选择是计算公式[2]中采用的Eqϕ（z | x）[logpθ（x | z）]，称为“重建概率”。这两个选择非常相似。由于在异常检测中只关注异常评分的顺序而不是确切值，因此我们遵循[2]并使用后者。作为替代方案，如[36]中所述，ELBO（等式（1））也可用于近似logpθ（x）。但是，ELBO中的额外项Eqϕ（z | x）[]logpθ（z）-logqϕ（z | x）]使其内部机制难以理解。由于[36]中的实验不支持该替代方法的优越性，因此我们选择不使用它。
-
-During detection, the anomalies and missing points in a testing window x can bring bias to the mapped z, and further make the reconstruction probability inaccurate, which would be discussed in § 5.2. Since the missing points are always known (as “null”), Unsupervised Anomaly Detection via Variational Auto-Encoder for Seasonal KPIs in Web Applications we have the chance to eliminate the biases introduced by missing points. We choose to adopt the MCMC-based missing data imputation technique with the trained VAE, which is proposed by [32]. Meanwhile, we do not know the exact positions of anomalies before detection, thus MCMC cannot be adopted on anomalies.
-> 在检测期间，测试窗口x中的异常和缺失点可能给映射的z带来偏差，并进一步使重建概率不准确，这将在5.2节中讨论。 由于遗漏点始终是已知的（“null”），因此通过对Web应用程序中周期性KPI的变分自动编码器进行无监督异常检测，我们有机会消除遗漏点带来的偏差。 我们选择采用由yi已训练的VAE进行的基于MCMC的缺失数据插补技术，该技术由[32]提出。 同时，我们不知道异常在检测之前的确切位置，因此无法对异常采用MCMC。
-
-More specifically, the testing x is divided into observed and missing parts, i.e., (xo, xm). A z sample is obtained from qϕ(z|xo, xm), then a reconstruction sample (x′o, x′m) is obtained frompθ (xo, xm |z). (xo, xm) is then replaced by (xo, x′m), i.e., the observed points are fixed and the missing points are set to new values. This process is iterated for M times, then the final (xo, x′m) is used for computing the reconstruction probability. The intermediate x′m will keep getting closer to normal values during the whole procedure. Given sufficiently large M, the biases can be reduced, and we can get a more accurate reconstruction probability. The MCMC method is illustrated in Fig 5 and is shown in the Detection step in Fig 3.
-> 更具体地说，将测试x分为观察到的部分和缺失部分，即（xo，xm）。 从qϕ（z | xo，xm）获得z样本，然后从pθ（xo，xm | z）获得重构样本（x'o，x'm）。 然后将（xo，xm）替换为（xo，x'm），即观察点固定，缺失点设置为新值。 将该过程重复M次，然后将最终值（xo，x'm）用于计算重建概率。 在整个过程中，中间值x'm会越来越接近正常值。 给定足够大的M，可以减少偏差，并且可以获得更准确的重构概率。 MCMC方法在图5中说明，并在图3的“检测”步骤中显示。
+More specifically, the testing x is divided into observed and missing parts, i.e., $(x_o, x_m)$. A z sample is obtained from $q_\phi(z|x_o, x_m)$, then a reconstruction sample $(x′_o, x′_m)$ is obtained from $p_\theta (x_o, x_m |z)$. $(x_o, x_m)$ is then replaced by $(x_o, x′_m)$, i.e., the observed points are fixed and the missing points are set to new values. This process is iterated for M times, then the final $(x_o, x′_m)$ is used for computing the reconstruction probability. The intermediate $x′_m$ will keep getting closer to normal values during the whole procedure. Given sufficiently large M, the biases can be reduced, and we can get a more accurate reconstruction probability. The MCMC method is illustrated in Fig 5 and is shown in the Detection step in Fig 3.
+> 更具体地说，将测试x分为观察到的部分和缺失部分，即$(x_o, x_m)$。 从 $q_\phi(z|x_o, x_m)$获得z样本，然后从$p_\theta (x_o, x_m |z)$获得重构样本 $(x′_o, x′_m)$。 然后将 $(x_o, x_m)$ 替换为 $(x_o, x′_m)$，即观察点固定，缺失点设置为新值。 将该过程重复M次，然后将最终值 $(x_o, x′_m)$用于计算重建概率。 在整个过程中，中间值$x′_m$会越来越接近正常值。 给定足够大的M，可以减少偏差，并且可以获得更准确的重构概率。 MCMC方法在图5中说明，并在图3的“检测”步骤中显示。
 
 ![](resources/figure5.PNG)
 
-After MCMC, we take L samples of z to compute the reconstruction probability by Monte Carlo integration. It is worth mentioning that, although we may compute the reconstruction probability for each point in every window of x, we only use the score for the last point (i.e., xt in xt-T +1, . . . , xt ), since we want to respond to anomalies as soon as possible during the detection. We will still use vector notations in later texts, corresponding to the architecture of VAE. While it is possible to improve the detection performance by delaying the decision and considering more scores for the same point at different times, we leave it as a future work.
-> 在MCMC之后，我们取L个z样本通过蒙特卡洛积分来计算重建概率。 值得一提的是，尽管我们可以计算x的每个窗口中每个点的重建概率，但我们仅使用最后一个点的分数（即xt-T+1...，xt中的xt，），因为 我们希望在检测过程中尽快对异常做出响应。 在以后的文本中，我们仍将使用矢量符号，它们与VAE的体系结构相对应。 尽管可以通过延迟决策并在不同时间考虑同一点的更多分数来提高检测性能，但我们将其留作将来的工作。
+After MCMC, we take L samples of z to compute the reconstruction probability by Monte Carlo integration. It is worth mentioning that, although we may compute the reconstruction probability for each point in every window of x, we only use the score for the last point (i.e., $x_t$ in $x_{t-T +1},..., xt $ ), since we want to respond to anomalies as soon as possible during the detection. We will still use vector notations in later texts, corresponding to the architecture of VAE. While it is possible to improve the detection performance by delaying the decision and considering more scores for the same point at different times, we leave it as a future work.
+> 在MCMC之后，我们取L个z样本通过蒙特卡洛积分来计算重建概率。 值得一提的是，尽管我们可以计算x的每个窗口中每个点的重建概率，但我们仅使用最后一个点的分数（即$x_{t-T+1}, ..., x_t$中的$x_t$，），因为 我们希望在检测过程中尽快对异常做出响应。 在以后的文本中，我们仍将使用矢量符号，它们与VAE的体系结构相对应。 尽管可以通过延迟决策并在不同时间考虑同一点的更多分数来提高检测性能，但我们将其留作将来的工作。
 
 4 EVALUATION
 > 实验评估
@@ -360,7 +373,7 @@ In this section we discuss the causes of the time gradient effect. To simplify t
 
 > 在本节中，我们讨论时间梯度效应的原因。 为了简化讨论，让我们假设训练集x都是正常的，因此M-ELBO现在等同于原始的ELBO。 然后，可以将M-ELBO分解为等式（4）中的三个术语（我们省略了一些下标来表示较短的符号）。
 
-$\begin{equation}\begin{aligned}                                   \varsigma(x) &= \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)+\log p_\theta(z)-\log q_\phi(z|x)]\\       &=\mathbb{E}[\log p_\theta(x|z)] + \mathbb{E}[\log p_\theta(z)] + \mathbb{H}[z|x]  \end{aligned} (4) \end{equation}$
+$\begin{equation}\begin{aligned}                                   \varsigma(x) &= \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)+\log p_\theta(z)-\log q_\phi(z|x)]\\       &=\mathbb{E}[\log p_\theta(x|z)] + \mathbb{E}[\log p_\theta(z)] + \mathbb{H}[z|x]  \end{aligned} \tag{4} \end{equation}$
 
 The 1st term requires z samples from qφ (z|x) to have a high likeli- hood of reconstructing x. As a result, qφ (z|x) for x with dissimilar shapes are separated. The 2nd term causes qφ (z|x) to concentrate on N (0, I). The 3rd term, the entropy of qφ (z|x), causes qφ (z|x) to expand wherever possible. Recall the 2nd term sets a restricted area for qφ (z|x) to expand (see Fig 11c for the combination effect of the 2nd and 3rd term). Taking the 1st term into account, this expansion would also stop if qφ (z|x) for two dissimilar x reach each other. In order for every qφ (z|x) to have a maximal territory when training converges (i.e., these three terms reach an equilibrium), similar x would have to get close to each other, allowing qφ (z|x) to grow larger with overlapping boundaries. Since contiguous x are similar in seasonal KPIs (and vise versa), the time gradient would be a natural consequence, if such equilibrium could be achieved.
 > 第一项要求qφ（z | x）中的z个样本具有重构x的高可能性。 结果，分离了形状不同的x的qφ（z | x）。 第二项使qφ（z | x）集中于N（0，I）。 第三项，即qφ（z | x）的熵，使qφ（z | x）尽可能扩大。 回想一下，第二项为qφ（z | x）设置了扩展的限制区域（关于第二项和第三项的组合效果，请参见图11c）。 考虑到第一项，如果两个不同x的qφ（z | x）彼此达到，则该扩展也将停止。 为了使每个qφ（z | x）在训练收敛时具有最大的范围（即，这三个项达到平衡），相似的x必须彼此靠近，从而使qφ（z | x）变大 边界重叠。 由于连续的x在季节性KPI中相似（反之亦然），因此，如果可以实现这种平衡，则时间梯度将是自然的结果。
